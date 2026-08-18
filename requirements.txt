@@ -1,7 +1,7 @@
-requests
-beautifulsoup4
-pandas
-lxml
-python-dotenv
-pytest
-truststore
+beautifulsoup4>=4.15,<5
+lxml>=6,<7
+pandas>=3,<4
+python-dotenv>=1,<2
+requests>=2.34,<3
+truststore>=0.10,<1
+pytest>=9,<10
