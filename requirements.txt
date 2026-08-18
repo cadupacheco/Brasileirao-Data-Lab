@@ -1,5 +1,6 @@
 beautifulsoup4>=4.15,<5
 lxml>=6,<7
+matplotlib>=3.11,<4
 pandas>=3,<4
 python-dotenv>=1,<2
 requests>=2.34,<3
