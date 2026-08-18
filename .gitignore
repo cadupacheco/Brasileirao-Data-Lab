@@ -247,3 +247,5 @@ volumes/
 
 local/
 storage/
+# Pytest local temp
+.pytest_tmp/

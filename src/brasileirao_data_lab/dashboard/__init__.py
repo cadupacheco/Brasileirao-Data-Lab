@@ -1,1 +1,0 @@
-"""Dashboard Streamlit do Brasileirão Data Lab."""

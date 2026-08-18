@@ -67,6 +67,42 @@ export interface EvolutionPoint {
   performance_pct: number;
 }
 
+export type MatchStatus =
+  | "all"
+  | "played"
+  | "upcoming";
+
+export interface ChampionshipMatch {
+  match_id: number;
+  season: number;
+  round: number;
+  match_number: number | null;
+  date: string | null;
+  time: string | null;
+
+  home_team_id: number;
+  home_team: string;
+  home_goals: number | null;
+
+  away_team_id: number;
+  away_team: string;
+  away_goals: number | null;
+
+  venue: string | null;
+  city: string | null;
+  state: string | null;
+
+  status:
+    | "played"
+    | "upcoming";
+}
+
+export interface MatchFilters {
+  roundNumber?: number;
+  teamId?: number;
+  status?: MatchStatus;
+}
+
 const API_URL =
   import.meta.env.VITE_API_URL ??
   "http://127.0.0.1:8000";
@@ -138,6 +174,61 @@ export function getEvolution(
       : "/api/evolution";
 
   return request<EvolutionPoint[]>(
+    endpoint,
+  );
+}
+
+
+export function getMatches(
+  filters: MatchFilters = {},
+) {
+  const params =
+    new URLSearchParams();
+
+  if (
+    filters.roundNumber
+    !== undefined
+  ) {
+    params.set(
+      "round_number",
+      String(
+        filters.roundNumber,
+      ),
+    );
+  }
+
+  if (
+    filters.teamId
+    !== undefined
+  ) {
+    params.set(
+      "team_id",
+      String(
+        filters.teamId,
+      ),
+    );
+  }
+
+  if (
+    filters.status
+    && filters.status
+    !== "all"
+  ) {
+    params.set(
+      "status",
+      filters.status,
+    );
+  }
+
+  const query =
+    params.toString();
+
+  const endpoint =
+    query
+      ? `/api/matches?${query}`
+      : "/api/matches";
+
+  return request<ChampionshipMatch[]>(
     endpoint,
   );
 }

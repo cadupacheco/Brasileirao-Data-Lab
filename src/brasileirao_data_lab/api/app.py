@@ -1,6 +1,13 @@
 from __future__ import annotations
 
-from typing import Annotated
+from datetime import (
+    date,
+    time,
+)
+from typing import (
+    Annotated,
+    Literal,
+)
 
 import pandas as pd
 
@@ -24,12 +31,27 @@ from brasileirao_data_lab.analytics.evolution import (
 from brasileirao_data_lab.database.analytics_bridge import (
     load_matches_for_analytics,
 )
+from brasileirao_data_lab.database.match_queries import (
+    get_matches_from_database,
+)
 from brasileirao_data_lab.database.repository import (
     get_standings_history,
 )
 from brasileirao_data_lab.database.session import (
     SessionLocal,
 )
+
+
+MatchFilterStatus = Literal[
+    "all",
+    "played",
+    "upcoming",
+]
+
+MatchResponseStatus = Literal[
+    "played",
+    "upcoming",
+]
 
 
 class HealthResponse(BaseModel):
@@ -104,6 +126,29 @@ class EvolutionPointResponse(BaseModel):
     goals_against: int
     goal_difference: int
     performance_pct: float
+
+
+class MatchResponse(BaseModel):
+    match_id: int
+    season: int
+    round: int
+    match_number: int | None
+    date: date | None
+    time: time | None
+
+    home_team_id: int
+    home_team: str
+    home_goals: int | None
+
+    away_team_id: int
+    away_team: str
+    away_goals: int | None
+
+    venue: str | None
+    city: str | None
+    state: str | None
+
+    status: MatchResponseStatus
 
 
 app = FastAPI(
@@ -329,10 +374,8 @@ def championship_summary(
 ) -> ChampionshipSummaryResponse:
     matches = load_api_matches()
 
-    summary = (
-        get_championship_summary(
-            matches
-        )
+    summary = get_championship_summary(
+        matches
     )
 
     standings = get_team_stats(
@@ -471,8 +514,7 @@ def evolution(
         Query(
             description=(
                 "IDs dos clubes que devem "
-                "ser retornados. Pode ser "
-                "informado mais de uma vez."
+                "ser retornados."
             ),
         ),
     ] = None,
@@ -545,3 +587,182 @@ def evolution(
         )
         for point in history
     ]
+
+
+@app.get(
+    "/api/matches",
+    response_model=list[
+        MatchResponse
+    ],
+    tags=["Matches"],
+)
+def championship_matches(
+    round_number: Annotated[
+        int | None,
+        Query(
+            ge=1,
+            le=38,
+            description=(
+                "Filtra as partidas "
+                "por rodada."
+            ),
+        ),
+    ] = None,
+    team_id: Annotated[
+        int | None,
+        Query(
+            gt=0,
+            description=(
+                "Filtra as partidas "
+                "por clube."
+            ),
+        ),
+    ] = None,
+    status: Annotated[
+        MatchFilterStatus,
+        Query(
+            description=(
+                "Filtra por all, "
+                "played ou upcoming."
+            ),
+        ),
+    ] = "all",
+) -> list[MatchResponse]:
+    matches = load_api_matches()
+
+    season = get_matches_season(
+        matches
+    )
+
+    with SessionLocal() as session:
+        database_matches = (
+            get_matches_from_database(
+                session=session,
+                season=season,
+                round_number=round_number,
+                team_id=team_id,
+                status=status,
+            )
+        )
+
+    result = []
+
+    for match in database_matches:
+        is_played = (
+            match["home_goals"]
+            is not None
+            and match["away_goals"]
+            is not None
+        )
+
+        match_status: MatchResponseStatus = (
+            "played"
+            if is_played
+            else "upcoming"
+        )
+
+        result.append(
+            MatchResponse(
+                match_id=int(
+                    match["match_id"]
+                ),
+                season=int(
+                    match["season"]
+                ),
+                round=int(
+                    match["round"]
+                ),
+                match_number=(
+                    int(
+                        match[
+                            "match_number"
+                        ]
+                    )
+                    if match[
+                        "match_number"
+                    ]
+                    is not None
+                    else None
+                ),
+                date=match[
+                    "date"
+                ],
+                time=match[
+                    "time"
+                ],
+                home_team_id=int(
+                    match[
+                        "home_team_id"
+                    ]
+                ),
+                home_team=str(
+                    match[
+                        "home_team"
+                    ]
+                ),
+                home_goals=(
+                    int(
+                        match[
+                            "home_goals"
+                        ]
+                    )
+                    if match[
+                        "home_goals"
+                    ]
+                    is not None
+                    else None
+                ),
+                away_team_id=int(
+                    match[
+                        "away_team_id"
+                    ]
+                ),
+                away_team=str(
+                    match[
+                        "away_team"
+                    ]
+                ),
+                away_goals=(
+                    int(
+                        match[
+                            "away_goals"
+                        ]
+                    )
+                    if match[
+                        "away_goals"
+                    ]
+                    is not None
+                    else None
+                ),
+                venue=(
+                    str(
+                        match["venue"]
+                    )
+                    if match[
+                        "venue"
+                    ]
+                    else None
+                ),
+                city=(
+                    str(
+                        match["city"]
+                    )
+                    if match[
+                        "city"
+                    ]
+                    else None
+                ),
+                state=(
+                    str(
+                        match["state"]
+                    )
+                    if match[
+                        "state"
+                    ]
+                    else None
+                ),
+                status=match_status,
+            )
+        )
+
+    return result

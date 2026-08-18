@@ -47,6 +47,20 @@ const CHART_COLORS = [
   "#ff7078",
   "#b08cff",
   "#ff9f5a",
+  "#4dd0e1",
+  "#ec70ff",
+  "#8bc34a",
+  "#ffca28",
+  "#26c6da",
+  "#ef5350",
+  "#7e57c2",
+  "#66bb6a",
+  "#ffa726",
+  "#42a5f5",
+  "#ab47bc",
+  "#d4e157",
+  "#26a69a",
+  "#ff7043",
 ];
 
 
@@ -277,17 +291,39 @@ function EvolutionPage() {
       return;
     }
 
-    if (
-      selectedTeamIds.length
-      >= 6
-    ) {
-      return;
-    }
-
     setSelectedTeamIds([
       ...selectedTeamIds,
       teamId,
     ]);
+  }
+
+
+  function selectAllTeams() {
+    setSelectedTeamIds(
+      standings.map(
+        (
+          team,
+        ) =>
+          team.team_id,
+      ),
+    );
+  }
+
+
+  function selectTopFive() {
+    setSelectedTeamIds(
+      standings
+        .slice(
+          0,
+          5,
+        )
+        .map(
+          (
+            team,
+          ) =>
+            team.team_id,
+        ),
+    );
   }
 
 
@@ -414,6 +450,24 @@ function EvolutionPage() {
               <CircleDot size={15} />
               Pontos
             </button>
+
+            <button
+              className="metric-button"
+              onClick={
+                selectTopFive
+              }
+            >
+              Top 5
+            </button>
+
+            <button
+              className="metric-button"
+              onClick={
+                selectAllTeams
+              }
+            >
+              Todos
+            </button>
           </div>
         </div>
 
@@ -422,7 +476,10 @@ function EvolutionPage() {
           <strong>
             {
               selectedTeamIds.length
-            }/6
+            }/
+            {
+              standings.length
+            }
           </strong>
 
           <span>
