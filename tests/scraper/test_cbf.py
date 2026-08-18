@@ -16,7 +16,7 @@ from brasileirao_data_lab.scrapers.cbf import (
 PROJECT_ROOT = (
     Path(__file__)
     .resolve()
-    .parents[1]
+    .parents[2]
 )
 
 HTML_FILE = (

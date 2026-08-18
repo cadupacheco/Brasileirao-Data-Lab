@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 import pandas as pd
@@ -91,6 +92,54 @@ def load_standings(
     return pd.read_csv(path)
 
 
+def load_matches_by_source(
+    source: str = "csv",
+) -> pd.DataFrame:
+    """
+    Carrega partidas a partir da fonte solicitada.
+
+    Fontes disponíveis:
+
+    csv
+        data/processed/matches.csv
+
+    database
+        SQLite através da camada Database.
+    """
+
+    normalized_source = (
+        source.strip()
+        .lower()
+    )
+
+    if normalized_source == "csv":
+
+        return load_matches()
+
+    if normalized_source == "database":
+
+        # Imports locais evitam dependência circular,
+        # pois analytics_bridge também utiliza funções
+        # deste módulo.
+        from brasileirao_data_lab.database.analytics_bridge import (
+            load_matches_for_analytics,
+        )
+        from brasileirao_data_lab.database.session import (
+            SessionLocal,
+        )
+
+        with SessionLocal() as session:
+
+            return load_matches_for_analytics(
+                session
+            )
+
+    raise ValueError(
+        "Fonte inválida. "
+        "Utilize 'csv' ou 'database'."
+    )
+
+
 # =============================================================================
 # Jogos realizados e futuros
 # =============================================================================
@@ -106,7 +155,9 @@ def get_played_matches(
         & matches["away_goals"].notna()
     )
 
-    return matches.loc[mask].copy()
+    return matches.loc[
+        mask
+    ].copy()
 
 
 def get_future_matches(
@@ -119,7 +170,9 @@ def get_future_matches(
         | matches["away_goals"].isna()
     )
 
-    return matches.loc[mask].copy()
+    return matches.loc[
+        mask
+    ].copy()
 
 
 # =============================================================================
@@ -202,7 +255,9 @@ def sort_matches_chronologically(
     )
 
     time_values = (
-        dataframe["time"].fillna("00:00")
+        dataframe["time"].fillna(
+            "00:00"
+        )
         if "time" in dataframe.columns
         else pd.Series(
             "00:00",
@@ -211,9 +266,13 @@ def sort_matches_chronologically(
     )
 
     dataframe["_kickoff"] = pd.to_datetime(
-        date_values.astype(str)
+        date_values.astype(
+            str
+        )
         + " "
-        + time_values.astype(str),
+        + time_values.astype(
+            str
+        ),
         errors="coerce",
     )
 
@@ -222,11 +281,13 @@ def sort_matches_chronologically(
     ]
 
     if "round" in dataframe.columns:
+
         sort_columns.append(
             "round"
         )
 
     if "match_number" in dataframe.columns:
+
         sort_columns.append(
             "match_number"
         )
@@ -237,7 +298,9 @@ def sort_matches_chronologically(
     )
 
     return dataframe.drop(
-        columns=["_kickoff"]
+        columns=[
+            "_kickoff"
+        ]
     )
 
 
@@ -263,9 +326,17 @@ def get_championship_summary(
         played
     )
 
-    total_matches = len(matches)
-    played_matches = len(played)
-    future_matches = len(future)
+    total_matches = len(
+        matches
+    )
+
+    played_matches = len(
+        played
+    )
+
+    future_matches = len(
+        future
+    )
 
     total_goals = int(
         played["home_goals"].sum()
@@ -281,19 +352,29 @@ def get_championship_summary(
     )
 
     home_wins = int(
-        (played["result"] == "H").sum()
+        (
+            played["result"]
+            == "H"
+        ).sum()
     )
 
     draws = int(
-        (played["result"] == "D").sum()
+        (
+            played["result"]
+            == "D"
+        ).sum()
     )
 
     away_wins = int(
-        (played["result"] == "A").sum()
+        (
+            played["result"]
+            == "A"
+        ).sum()
     )
 
     average_goals = (
-        total_goals / played_matches
+        total_goals
+        / played_matches
         if played_matches
         else 0
     )
@@ -364,10 +445,14 @@ def get_teams(
             ignore_index=True,
         )
         .dropna(
-            subset=["team_id"]
+            subset=[
+                "team_id"
+            ]
         )
         .drop_duplicates(
-            subset=["team_id"]
+            subset=[
+                "team_id"
+            ]
         )
         .sort_values(
             "team_id"
@@ -396,6 +481,7 @@ def get_home_away_stats(
     )
 
     if played.empty:
+
         return pd.DataFrame()
 
     teams = get_teams(
@@ -407,17 +493,27 @@ def get_home_away_stats(
     for _, team_row in teams.iterrows():
 
         team_id = int(
-            team_row["team_id"]
+            team_row[
+                "team_id"
+            ]
         )
 
-        team_name = team_row["team"]
+        team_name = team_row[
+            "team"
+        ]
 
         home = played[
-            played["home_team_id"] == team_id
+            played[
+                "home_team_id"
+            ]
+            == team_id
         ]
 
         away = played[
-            played["away_team_id"] == team_id
+            played[
+                "away_team_id"
+            ]
+            == team_id
         ]
 
         # ---------------------------------------------------------------------
@@ -430,15 +526,23 @@ def get_home_away_stats(
 
         home_wins = int(
             (
-                home["home_goals"]
-                > home["away_goals"]
+                home[
+                    "home_goals"
+                ]
+                > home[
+                    "away_goals"
+                ]
             ).sum()
         )
 
         home_draws = int(
             (
-                home["home_goals"]
-                == home["away_goals"]
+                home[
+                    "home_goals"
+                ]
+                == home[
+                    "away_goals"
+                ]
             ).sum()
         )
 
@@ -449,11 +553,15 @@ def get_home_away_stats(
         )
 
         home_goals_for = int(
-            home["home_goals"].sum()
+            home[
+                "home_goals"
+            ].sum()
         )
 
         home_goals_against = int(
-            home["away_goals"].sum()
+            home[
+                "away_goals"
+            ].sum()
         )
 
         home_goal_difference = (
@@ -469,7 +577,10 @@ def get_home_away_stats(
         home_performance = (
             (
                 home_points
-                / (home_matches * 3)
+                / (
+                    home_matches
+                    * 3
+                )
                 * 100
             )
             if home_matches
@@ -486,15 +597,23 @@ def get_home_away_stats(
 
         away_wins = int(
             (
-                away["away_goals"]
-                > away["home_goals"]
+                away[
+                    "away_goals"
+                ]
+                > away[
+                    "home_goals"
+                ]
             ).sum()
         )
 
         away_draws = int(
             (
-                away["away_goals"]
-                == away["home_goals"]
+                away[
+                    "away_goals"
+                ]
+                == away[
+                    "home_goals"
+                ]
             ).sum()
         )
 
@@ -505,11 +624,15 @@ def get_home_away_stats(
         )
 
         away_goals_for = int(
-            away["away_goals"].sum()
+            away[
+                "away_goals"
+            ].sum()
         )
 
         away_goals_against = int(
-            away["home_goals"].sum()
+            away[
+                "home_goals"
+            ].sum()
         )
 
         away_goal_difference = (
@@ -525,7 +648,10 @@ def get_home_away_stats(
         away_performance = (
             (
                 away_points
-                / (away_matches * 3)
+                / (
+                    away_matches
+                    * 3
+                )
                 * 100
             )
             if away_matches
@@ -588,6 +714,7 @@ def get_home_ranking(
     )
 
     if stats.empty:
+
         return stats
 
     ranking = stats.sort_values(
@@ -629,6 +756,7 @@ def get_away_ranking(
     )
 
     if stats.empty:
+
         return stats
 
     ranking = stats.sort_values(
@@ -678,6 +806,7 @@ def get_team_stats(
     )
 
     if venue_stats.empty:
+
         return pd.DataFrame()
 
     stats = []
@@ -685,33 +814,57 @@ def get_team_stats(
     for _, team in venue_stats.iterrows():
 
         matches_played = int(
-            team["home_matches"]
-            + team["away_matches"]
+            team[
+                "home_matches"
+            ]
+            + team[
+                "away_matches"
+            ]
         )
 
         wins = int(
-            team["home_wins"]
-            + team["away_wins"]
+            team[
+                "home_wins"
+            ]
+            + team[
+                "away_wins"
+            ]
         )
 
         draws = int(
-            team["home_draws"]
-            + team["away_draws"]
+            team[
+                "home_draws"
+            ]
+            + team[
+                "away_draws"
+            ]
         )
 
         losses = int(
-            team["home_losses"]
-            + team["away_losses"]
+            team[
+                "home_losses"
+            ]
+            + team[
+                "away_losses"
+            ]
         )
 
         goals_for = int(
-            team["home_goals_for"]
-            + team["away_goals_for"]
+            team[
+                "home_goals_for"
+            ]
+            + team[
+                "away_goals_for"
+            ]
         )
 
         goals_against = int(
-            team["home_goals_against"]
-            + team["away_goals_against"]
+            team[
+                "home_goals_against"
+            ]
+            + team[
+                "away_goals_against"
+            ]
         )
 
         goal_difference = (
@@ -727,7 +880,10 @@ def get_team_stats(
         performance = (
             (
                 points
-                / (matches_played * 3)
+                / (
+                    matches_played
+                    * 3
+                )
                 * 100
             )
             if matches_played
@@ -737,9 +893,13 @@ def get_team_stats(
         stats.append(
             {
                 "team_id": int(
-                    team["team_id"]
+                    team[
+                        "team_id"
+                    ]
                 ),
-                "team": team["team"],
+                "team": team[
+                    "team"
+                ],
                 "matches": matches_played,
                 "wins": wins,
                 "draws": draws,
@@ -754,41 +914,65 @@ def get_team_stats(
                 ),
 
                 "home_matches": int(
-                    team["home_matches"]
+                    team[
+                        "home_matches"
+                    ]
                 ),
                 "home_wins": int(
-                    team["home_wins"]
+                    team[
+                        "home_wins"
+                    ]
                 ),
                 "home_draws": int(
-                    team["home_draws"]
+                    team[
+                        "home_draws"
+                    ]
                 ),
                 "home_losses": int(
-                    team["home_losses"]
+                    team[
+                        "home_losses"
+                    ]
                 ),
                 "home_points": int(
-                    team["home_points"]
+                    team[
+                        "home_points"
+                    ]
                 ),
                 "home_performance_pct": float(
-                    team["home_performance_pct"]
+                    team[
+                        "home_performance_pct"
+                    ]
                 ),
 
                 "away_matches": int(
-                    team["away_matches"]
+                    team[
+                        "away_matches"
+                    ]
                 ),
                 "away_wins": int(
-                    team["away_wins"]
+                    team[
+                        "away_wins"
+                    ]
                 ),
                 "away_draws": int(
-                    team["away_draws"]
+                    team[
+                        "away_draws"
+                    ]
                 ),
                 "away_losses": int(
-                    team["away_losses"]
+                    team[
+                        "away_losses"
+                    ]
                 ),
                 "away_points": int(
-                    team["away_points"]
+                    team[
+                        "away_points"
+                    ]
                 ),
                 "away_performance_pct": float(
-                    team["away_performance_pct"]
+                    team[
+                        "away_performance_pct"
+                    ]
                 ),
             }
         )
@@ -850,6 +1034,7 @@ def get_team_recent_matches(
     """
 
     if last_n <= 0:
+
         raise ValueError(
             "last_n deve ser maior que zero."
         )
@@ -860,11 +1045,17 @@ def get_team_recent_matches(
 
     team_matches = played[
         (
-            played["home_team_id"] == team_id
+            played[
+                "home_team_id"
+            ]
+            == team_id
         )
         |
         (
-            played["away_team_id"] == team_id
+            played[
+                "away_team_id"
+            ]
+            == team_id
         )
     ].copy()
 
@@ -874,8 +1065,10 @@ def get_team_recent_matches(
         )
     )
 
-    team_matches = team_matches.tail(
-        last_n
+    team_matches = (
+        team_matches.tail(
+            last_n
+        )
     )
 
     recent_matches = []
@@ -883,22 +1076,34 @@ def get_team_recent_matches(
     for _, match in team_matches.iterrows():
 
         is_home = (
-            int(match["home_team_id"])
-            == int(team_id)
+            int(
+                match[
+                    "home_team_id"
+                ]
+            )
+            == int(
+                team_id
+            )
         )
 
         if is_home:
 
             goals_for = int(
-                match["home_goals"]
+                match[
+                    "home_goals"
+                ]
             )
 
             goals_against = int(
-                match["away_goals"]
+                match[
+                    "away_goals"
+                ]
             )
 
             opponent_id = int(
-                match["away_team_id"]
+                match[
+                    "away_team_id"
+                ]
             )
 
             opponent = match[
@@ -908,60 +1113,95 @@ def get_team_recent_matches(
         else:
 
             goals_for = int(
-                match["away_goals"]
+                match[
+                    "away_goals"
+                ]
             )
 
             goals_against = int(
-                match["home_goals"]
+                match[
+                    "home_goals"
+                ]
             )
 
             opponent_id = int(
-                match["home_team_id"]
+                match[
+                    "home_team_id"
+                ]
             )
 
             opponent = match[
                 "home_team"
             ]
 
-        if goals_for > goals_against:
+        if (
+            goals_for
+            > goals_against
+        ):
+
             result = "V"
 
-        elif goals_for == goals_against:
+        elif (
+            goals_for
+            == goals_against
+        ):
+
             result = "E"
 
         else:
+
             result = "D"
 
         recent_matches.append(
             {
                 "match_id": (
-                    int(match["match_id"])
+                    int(
+                        match[
+                            "match_id"
+                        ]
+                    )
                     if (
-                        "match_id" in match
+                        "match_id"
+                        in match
                         and pd.notna(
-                            match["match_id"]
+                            match[
+                                "match_id"
+                            ]
                         )
                     )
                     else None
                 ),
                 "round": (
-                    int(match["round"])
+                    int(
+                        match[
+                            "round"
+                        ]
+                    )
                     if (
-                        "round" in match
+                        "round"
+                        in match
                         and pd.notna(
-                            match["round"]
+                            match[
+                                "round"
+                            ]
                         )
                     )
                     else None
                 ),
                 "date": (
-                    match["date"]
-                    if "date" in match
+                    match[
+                        "date"
+                    ]
+                    if "date"
+                    in match
                     else None
                 ),
                 "time": (
-                    match["time"]
-                    if "time" in match
+                    match[
+                        "time"
+                    ]
+                    if "time"
+                    in match
                     else None
                 ),
                 "home": is_home,
@@ -987,6 +1227,7 @@ def get_recent_form_table(
     """
 
     if last_n <= 0:
+
         raise ValueError(
             "last_n deve ser maior que zero."
         )
@@ -1004,7 +1245,9 @@ def get_recent_form_table(
     for _, team in teams.iterrows():
 
         team_id = int(
-            team["team_id"]
+            team[
+                "team_id"
+            ]
         )
 
         recent = get_team_recent_matches(
@@ -1014,18 +1257,30 @@ def get_recent_form_table(
         )
 
         wins = sum(
-            game["result"] == "V"
-            for game in recent
+            game[
+                "result"
+            ]
+            == "V"
+            for game
+            in recent
         )
 
         draws = sum(
-            game["result"] == "E"
-            for game in recent
+            game[
+                "result"
+            ]
+            == "E"
+            for game
+            in recent
         )
 
         losses = sum(
-            game["result"] == "D"
-            for game in recent
+            game[
+                "result"
+            ]
+            == "D"
+            for game
+            in recent
         )
 
         points = (
@@ -1034,13 +1289,19 @@ def get_recent_form_table(
         )
 
         goals_for = sum(
-            game["goals_for"]
-            for game in recent
+            game[
+                "goals_for"
+            ]
+            for game
+            in recent
         )
 
         goals_against = sum(
-            game["goals_against"]
-            for game in recent
+            game[
+                "goals_against"
+            ]
+            for game
+            in recent
         )
 
         goal_difference = (
@@ -1055,7 +1316,10 @@ def get_recent_form_table(
         performance = (
             (
                 points
-                / (games_count * 3)
+                / (
+                    games_count
+                    * 3
+                )
                 * 100
             )
             if games_count
@@ -1063,14 +1327,19 @@ def get_recent_form_table(
         )
 
         form = " ".join(
-            game["result"]
-            for game in recent
+            game[
+                "result"
+            ]
+            for game
+            in recent
         )
 
         stats.append(
             {
                 "team_id": team_id,
-                "team": team["team"],
+                "team": team[
+                    "team"
+                ],
                 "recent_matches": games_count,
                 "recent_wins": wins,
                 "recent_draws": draws,
@@ -1092,6 +1361,7 @@ def get_recent_form_table(
     )
 
     if dataframe.empty:
+
         return dataframe
 
     dataframe = (
@@ -1175,12 +1445,16 @@ def compare_with_official_standings(
         ]
         .rename(
             columns={
-                "team": "calculated_team",
+                "team": (
+                    "calculated_team"
+                ),
                 **{
                     metric: (
-                        f"calculated_{metric}"
+                        f"calculated_"
+                        f"{metric}"
                     )
-                    for metric in metrics
+                    for metric
+                    in metrics
                 },
             }
         )
@@ -1192,24 +1466,32 @@ def compare_with_official_standings(
         ]
         .rename(
             columns={
-                "team": "official_team",
-                "position": "official_position",
+                "team": (
+                    "official_team"
+                ),
+                "position": (
+                    "official_position"
+                ),
                 **{
                     metric: (
-                        f"official_{metric}"
+                        f"official_"
+                        f"{metric}"
                     )
-                    for metric in metrics
+                    for metric
+                    in metrics
                 },
             }
         )
     )
 
-    comparison = calculated_data.merge(
-        official_data,
-        on="team_id",
-        how="outer",
-        validate="one_to_one",
-        indicator=True,
+    comparison = (
+        calculated_data.merge(
+            official_data,
+            on="team_id",
+            how="outer",
+            validate="one_to_one",
+            indicator=True,
+        )
     )
 
     for metric in metrics:
@@ -1225,18 +1507,31 @@ def compare_with_official_standings(
             ]
         )
 
-    comparison["position_match"] = (
-        comparison["calculated_position"]
-        == comparison["official_position"]
+    comparison[
+        "position_match"
+    ] = (
+        comparison[
+            "calculated_position"
+        ]
+        == comparison[
+            "official_position"
+        ]
     )
 
     metric_checks = [
         f"{metric}_match"
-        for metric in metrics
+        for metric
+        in metrics
     ]
 
-    comparison["all_stats_match"] = (
-        comparison["_merge"].eq("both")
+    comparison[
+        "all_stats_match"
+    ] = (
+        comparison[
+            "_merge"
+        ].eq(
+            "both"
+        )
         & comparison[
             metric_checks
         ].all(
@@ -1246,7 +1541,9 @@ def compare_with_official_standings(
 
     return (
         comparison.sort_values(
-            by="official_position",
+            by=(
+                "official_position"
+            ),
             na_position="last",
         )
         .reset_index(
@@ -1260,15 +1557,29 @@ def compare_with_official_standings(
 # =============================================================================
 
 
-def print_championship_summary() -> None:
-    """Exibe o painel de análise do campeonato."""
+def print_championship_summary(
+    source: str = "csv",
+) -> None:
+    """
+    Exibe o painel de análise do campeonato.
 
-    matches = load_matches()
+    source:
+        csv
+        database
+    """
 
-    official_standings = load_standings()
+    matches = load_matches_by_source(
+        source
+    )
 
-    summary = get_championship_summary(
-        matches
+    official_standings = (
+        load_standings()
+    )
+
+    summary = (
+        get_championship_summary(
+            matches
+        )
     )
 
     team_stats = get_team_stats(
@@ -1283,9 +1594,11 @@ def print_championship_summary() -> None:
         matches
     )
 
-    recent_form = get_recent_form_table(
-        matches,
-        last_n=5,
+    recent_form = (
+        get_recent_form_table(
+            matches,
+            last_n=5,
+        )
     )
 
     comparison = (
@@ -1295,10 +1608,23 @@ def print_championship_summary() -> None:
         )
     )
 
+    source_label = (
+        "SQLite"
+        if source.lower()
+        == "database"
+        else "CSV"
+    )
+
     print()
     print("⚽ Brasileirão Data Lab")
-    print("📊 V0.2 - Análise do Campeonato")
+    print(
+        "📊 V0.3 - Análise do Campeonato"
+    )
     print("=" * 68)
+
+    print(
+        f"Fonte: {source_label}"
+    )
 
     # -------------------------------------------------------------------------
     # Campeonato
@@ -1362,13 +1688,40 @@ def print_championship_summary() -> None:
 
     if not team_stats.empty:
 
+        top_five = (
+            team_stats
+            .head(
+                5
+            )
+            .reset_index(
+                drop=True
+            )
+        )
+
+        expected_top_size = min(
+            5,
+            len(
+                team_stats
+            ),
+        )
+
+        if len(
+            top_five
+        ) != expected_top_size:
+
+            raise RuntimeError(
+                "Falha ao montar o Top 5 "
+                "da classificação."
+            )
+
         print()
-        print("TOP 5 - CLASSIFICAÇÃO CALCULADA")
+        print(
+            "TOP 5 - CLASSIFICAÇÃO CALCULADA"
+        )
         print("-" * 68)
 
         for _, team in (
-            team_stats.head(5)
-            .iterrows()
+            top_five.iterrows()
         ):
 
             print(
@@ -1396,13 +1749,17 @@ def print_championship_summary() -> None:
         print(
             f"🔥 Melhor ataque: "
             f"{best_attack['team']} "
-            f"({int(best_attack['goals_for'])} gols)"
+            f"("
+            f"{int(best_attack['goals_for'])} "
+            f"gols)"
         )
 
         print(
             f"🧱 Melhor defesa: "
             f"{best_defense['team']} "
-            f"({int(best_defense['goals_against'])} sofridos)"
+            f"("
+            f"{int(best_defense['goals_against'])} "
+            f"sofridos)"
         )
 
     # -------------------------------------------------------------------------
@@ -1412,12 +1769,15 @@ def print_championship_summary() -> None:
     if not home_ranking.empty:
 
         print()
-        print("🏠 TOP 5 - MELHORES MANDANTES")
+        print(
+            "🏠 TOP 5 - MELHORES MANDANTES"
+        )
         print("-" * 68)
 
         for _, team in (
-            home_ranking.head(5)
-            .iterrows()
+            home_ranking.head(
+                5
+            ).iterrows()
         ):
 
             print(
@@ -1434,12 +1794,15 @@ def print_championship_summary() -> None:
     if not away_ranking.empty:
 
         print()
-        print("✈️ TOP 5 - MELHORES VISITANTES")
+        print(
+            "✈️ TOP 5 - MELHORES VISITANTES"
+        )
         print("-" * 68)
 
         for _, team in (
-            away_ranking.head(5)
-            .iterrows()
+            away_ranking.head(
+                5
+            ).iterrows()
         ):
 
             print(
@@ -1456,12 +1819,16 @@ def print_championship_summary() -> None:
     if not recent_form.empty:
 
         print()
-        print("🔥 TOP 5 - MELHOR MOMENTO (ÚLTIMOS 5)")
+        print(
+            "🔥 TOP 5 - MELHOR MOMENTO "
+            "(ÚLTIMOS 5)"
+        )
         print("-" * 68)
 
         for _, team in (
-            recent_form.head(5)
-            .iterrows()
+            recent_form.head(
+                5
+            ).iterrows()
         ):
 
             print(
@@ -1492,7 +1859,9 @@ def print_championship_summary() -> None:
     )
 
     print()
-    print("VALIDAÇÃO CONTRA A CBF")
+    print(
+        "VALIDAÇÃO CONTRA A CBF"
+    )
     print("-" * 68)
 
     print(
@@ -1505,7 +1874,12 @@ def print_championship_summary() -> None:
         f"{matching_positions}/{total_teams} clubes"
     )
 
-    if exact_stats == total_teams:
+    if (
+        exact_stats
+        == total_teams
+        and matching_positions
+        == total_teams
+    ):
 
         print(
             "✅ Dados calculados conferem "
@@ -1523,16 +1897,28 @@ def print_championship_summary() -> None:
             ~comparison[
                 "all_stats_match"
             ]
+            |
+            ~comparison[
+                "position_match"
+            ]
         ]
 
-        for _, team in divergent.iterrows():
+        for _, team in (
+            divergent.iterrows()
+        ):
 
             team_name = (
-                team["official_team"]
+                team[
+                    "official_team"
+                ]
                 if pd.notna(
-                    team["official_team"]
+                    team[
+                        "official_team"
+                    ]
                 )
-                else team["calculated_team"]
+                else team[
+                    "calculated_team"
+                ]
             )
 
             print(
@@ -1543,5 +1929,47 @@ def print_championship_summary() -> None:
     print("=" * 68)
 
 
+# =============================================================================
+# CLI
+# =============================================================================
+
+
+def create_parser() -> argparse.ArgumentParser:
+    """Cria os argumentos da CLI."""
+
+    parser = argparse.ArgumentParser(
+        description=(
+            "Análise do Campeonato Brasileiro."
+        )
+    )
+
+    parser.add_argument(
+        "--source",
+        choices=[
+            "csv",
+            "database",
+        ],
+        default="csv",
+        help=(
+            "Fonte dos dados das partidas. "
+            "Padrão: csv."
+        ),
+    )
+
+    return parser
+
+
+def main() -> None:
+    """Executa a CLI."""
+
+    parser = create_parser()
+
+    args = parser.parse_args()
+
+    print_championship_summary(
+        source=args.source
+    )
+
+
 if __name__ == "__main__":
-    print_championship_summary()
+    main()
