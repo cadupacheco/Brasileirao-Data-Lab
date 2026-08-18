@@ -50,9 +50,27 @@ export interface RecentForm {
   form: string;
 }
 
+export interface EvolutionPoint {
+  season: number;
+  round: number;
+  team_id: number;
+  team: string;
+  position: number;
+  matches: number;
+  points: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  goals_for: number;
+  goals_against: number;
+  goal_difference: number;
+  performance_pct: number;
+}
+
 const API_URL =
   import.meta.env.VITE_API_URL ??
   "http://127.0.0.1:8000";
+
 
 async function request<T>(
   endpoint: string,
@@ -70,11 +88,13 @@ async function request<T>(
   return response.json() as Promise<T>;
 }
 
+
 export function getChampionshipSummary() {
   return request<ChampionshipSummary>(
     "/api/championship/summary",
   );
 }
+
 
 export function getStandings() {
   return request<Standing[]>(
@@ -82,8 +102,42 @@ export function getStandings() {
   );
 }
 
+
 export function getRecentForm() {
   return request<RecentForm[]>(
     "/api/recent-form?last_n=5",
+  );
+}
+
+
+export function getEvolution(
+  teamIds?: number[],
+) {
+  const params =
+    new URLSearchParams();
+
+  teamIds?.forEach(
+    (
+      teamId,
+    ) => {
+      params.append(
+        "team_ids",
+        String(
+          teamId,
+        ),
+      );
+    },
+  );
+
+  const query =
+    params.toString();
+
+  const endpoint =
+    query
+      ? `/api/evolution?${query}`
+      : "/api/evolution";
+
+  return request<EvolutionPoint[]>(
+    endpoint,
   );
 }

@@ -21,6 +21,14 @@ import type {
 } from "react";
 
 import {
+  BrowserRouter,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+
+import {
   getChampionshipSummary,
   getRecentForm,
   getStandings,
@@ -32,10 +40,187 @@ import type {
   Standing,
 } from "./api";
 
+import ClubsPage from "./pages/ClubsPage";
+import StandingsPage from "./pages/StandingsPage";
+
 import "./App.css";
 
 
 function App() {
+  return (
+    <BrowserRouter>
+      <AppLayout />
+    </BrowserRouter>
+  );
+}
+
+
+function AppLayout() {
+  const navigate =
+    useNavigate();
+
+  const location =
+    useLocation();
+
+
+  function isActive(
+    path: string,
+  ) {
+    return (
+      location.pathname
+      === path
+    );
+  }
+
+
+  return (
+    <div className="app-shell">
+      <aside className="sidebar">
+        <div className="brand">
+          <div className="brand-icon">
+            <Goal size={24} />
+          </div>
+
+          <div>
+            <strong>
+              Brasileirão
+            </strong>
+
+            <span>
+              Data Lab
+            </span>
+          </div>
+        </div>
+
+
+        <nav className="nav">
+          <button
+            className={
+              `nav-item ${
+                isActive("/")
+                  ? "active"
+                  : ""
+              }`
+            }
+            onClick={
+              () =>
+                navigate("/")
+            }
+          >
+            <Home size={18} />
+            Visão Geral
+          </button>
+
+
+          <button
+            className={
+              `nav-item ${
+                isActive(
+                  "/classificacao",
+                )
+                  ? "active"
+                  : ""
+              }`
+            }
+            onClick={
+              () =>
+                navigate(
+                  "/classificacao",
+                )
+            }
+          >
+            <Trophy size={18} />
+            Classificação
+          </button>
+
+
+          <button
+            className={
+              `nav-item ${
+                isActive(
+                  "/clubes",
+                )
+                  ? "active"
+                  : ""
+              }`
+            }
+            onClick={
+              () =>
+                navigate(
+                  "/clubes",
+                )
+            }
+          >
+            <Shield size={18} />
+            Clubes
+          </button>
+
+
+          <button
+            className="nav-item"
+            title="Em breve"
+          >
+            <BarChart3 size={18} />
+            Evolução
+          </button>
+
+
+          <button
+            className="nav-item"
+            title="Em breve"
+          >
+            <CalendarDays size={18} />
+            Jogos
+          </button>
+        </nav>
+
+
+        <div className="sidebar-footer">
+          <Database size={17} />
+
+          <div>
+            <strong>
+              SQLite
+            </strong>
+
+            <span>
+              Fonte principal
+            </span>
+          </div>
+        </div>
+      </aside>
+
+
+      <main className="content">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <OverviewPage />
+            }
+          />
+
+          <Route
+            path="/classificacao"
+            element={
+              <StandingsPage />
+            }
+          />
+
+          <Route
+            path="/clubes"
+            element={
+              <ClubsPage />
+            }
+          />
+        </Routes>
+      </main>
+    </div>
+  );
+}
+
+
+function OverviewPage() {
   const [
     summary,
     setSummary,
@@ -160,6 +345,7 @@ function App() {
   const leader =
     summary.leader;
 
+
   const bestAttack =
     [...standings]
       .sort(
@@ -170,6 +356,7 @@ function App() {
           second.goals_for
           - first.goals_for,
       )[0];
+
 
   const bestDefense =
     [...standings]
@@ -182,435 +369,377 @@ function App() {
           - second.goals_against,
       )[0];
 
+
   const hottestTeam =
     recentForm[0];
 
 
   return (
-    <div className="app-shell">
-      <aside className="sidebar">
-        <div className="brand">
-          <div className="brand-icon">
-            <Goal size={24} />
-          </div>
+    <>
+      <header className="page-header">
+        <div>
+          <span className="eyebrow">
+            CAMPEONATO BRASILEIRO
+          </span>
 
-          <div>
-            <strong>
-              Brasileirão
-            </strong>
+          <h1>
+            Série A{" "}
+            {summary.season}
+          </h1>
 
-            <span>
-              Data Lab
-            </span>
+          <p>
+            Dados processados pelo
+            Brasileirão Data Lab.
+          </p>
+        </div>
+
+
+        <div className="round-badge">
+          <Activity size={17} />
+
+          Rodada{" "}
+          {
+            summary.latest_played_round
+            ?? "-"
+          }
+        </div>
+      </header>
+
+
+      <section className="metric-grid">
+        <MetricCard
+          label="Líder"
+          value={
+            leader?.team
+            ?? "-"
+          }
+          detail={
+            leader
+              ? `${leader.points} pontos`
+              : "Sem dados"
+          }
+          icon={
+            <Trophy size={21} />
+          }
+        />
+
+
+        <MetricCard
+          label="Jogos realizados"
+          value={
+            String(
+              summary.played_matches,
+            )
+          }
+          detail={
+            `${summary.future_matches} restantes`
+          }
+          icon={
+            <CalendarDays size={21} />
+          }
+        />
+
+
+        <MetricCard
+          label="Gols marcados"
+          value={
+            String(
+              summary.total_goals,
+            )
+          }
+          detail={
+            `${summary.average_goals_per_match.toFixed(
+              2,
+            )} por jogo`
+          }
+          icon={
+            <Goal size={21} />
+          }
+        />
+
+
+        <MetricCard
+          label="Melhor momento"
+          value={
+            hottestTeam?.team
+            ?? "-"
+          }
+          detail={
+            hottestTeam
+              ? `${hottestTeam.points}/15 pontos`
+              : "Sem dados"
+          }
+          icon={
+            <Flame size={21} />
+          }
+        />
+      </section>
+
+
+      <section className="highlight-grid">
+        <HighlightCard
+          title="Melhor ataque"
+          value={
+            bestAttack?.team
+            ?? "-"
+          }
+          detail={
+            bestAttack
+              ? `${bestAttack.goals_for} gols marcados`
+              : "Sem dados"
+          }
+          icon={
+            <Goal size={20} />
+          }
+        />
+
+
+        <HighlightCard
+          title="Melhor defesa"
+          value={
+            bestDefense?.team
+            ?? "-"
+          }
+          detail={
+            bestDefense
+              ? `${bestDefense.goals_against} gols sofridos`
+              : "Sem dados"
+          }
+          icon={
+            <Shield size={20} />
+          }
+        />
+
+
+        <HighlightCard
+          title="Aproveitamento do líder"
+          value={
+            standings[0]
+              ? `${standings[0].performance_pct.toFixed(
+                  2,
+                )}%`
+              : "-"
+          }
+          detail={
+            standings[0]
+              ? `${standings[0].matches} partidas`
+              : "Sem dados"
+          }
+          icon={
+            <Medal size={20} />
+          }
+        />
+      </section>
+
+
+      <section className="dashboard-grid">
+        <div className="panel">
+          <PanelHeader
+            title="Classificação"
+            subtitle="Tabela atual do campeonato"
+            icon={
+              <Trophy size={19} />
+            }
+          />
+
+
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Pos</th>
+                  <th>Clube</th>
+                  <th>J</th>
+                  <th>V</th>
+                  <th>E</th>
+                  <th>D</th>
+                  <th>SG</th>
+                  <th>PTS</th>
+                </tr>
+              </thead>
+
+
+              <tbody>
+                {
+                  standings.map(
+                    (
+                      team,
+                    ) => (
+                      <tr
+                        key={
+                          team.team_id
+                        }
+                      >
+                        <td>
+                          <PositionBadge
+                            position={
+                              team.position
+                            }
+                          />
+                        </td>
+
+                        <td className="team-name">
+                          {
+                            team.team
+                          }
+                        </td>
+
+                        <td>
+                          {
+                            team.matches
+                          }
+                        </td>
+
+                        <td>
+                          {
+                            team.wins
+                          }
+                        </td>
+
+                        <td>
+                          {
+                            team.draws
+                          }
+                        </td>
+
+                        <td>
+                          {
+                            team.losses
+                          }
+                        </td>
+
+                        <td>
+                          {
+                            team.goal_difference
+                            > 0
+                              ? `+${team.goal_difference}`
+                              : team.goal_difference
+                          }
+                        </td>
+
+                        <td className="points">
+                          {
+                            team.points
+                          }
+                        </td>
+                      </tr>
+                    ),
+                  )
+                }
+              </tbody>
+            </table>
           </div>
         </div>
 
 
-        <nav className="nav">
-          <button
-            className="nav-item active"
-          >
-            <Home size={18} />
-            Visão Geral
-          </button>
-
-          <button
-            className="nav-item"
-          >
-            <Trophy size={18} />
-            Classificação
-          </button>
-
-          <button
-            className="nav-item"
-          >
-            <Shield size={18} />
-            Clubes
-          </button>
-
-          <button
-            className="nav-item"
-          >
-            <BarChart3 size={18} />
-            Evolução
-          </button>
-
-          <button
-            className="nav-item"
-          >
-            <CalendarDays size={18} />
-            Jogos
-          </button>
-        </nav>
-
-
-        <div className="sidebar-footer">
-          <Database size={17} />
-
-          <div>
-            <strong>
-              SQLite
-            </strong>
-
-            <span>
-              Fonte principal
-            </span>
-          </div>
-        </div>
-      </aside>
-
-
-      <main className="content">
-        <header className="page-header">
-          <div>
-            <span className="eyebrow">
-              CAMPEONATO BRASILEIRO
-            </span>
-
-            <h1>
-              Série A {summary.season}
-            </h1>
-
-            <p>
-              Dados processados pelo
-              Brasileirão Data Lab.
-            </p>
-          </div>
-
-          <div className="round-badge">
-            <Activity size={17} />
-
-            Rodada{" "}
-            {
-              summary.latest_played_round
-              ?? "-"
-            }
-          </div>
-        </header>
-
-
-        <section className="metric-grid">
-          <MetricCard
-            label="Líder"
-            value={
-              leader?.team
-              ?? "-"
-            }
-            detail={
-              leader
-                ? `${leader.points} pontos`
-                : "Sem dados"
-            }
-            icon={
-              <Trophy size={21} />
-            }
-          />
-
-          <MetricCard
-            label="Jogos realizados"
-            value={
-              String(
-                summary.played_matches,
-              )
-            }
-            detail={
-              `${summary.future_matches} restantes`
-            }
-            icon={
-              <CalendarDays size={21} />
-            }
-          />
-
-          <MetricCard
-            label="Gols marcados"
-            value={
-              String(
-                summary.total_goals,
-              )
-            }
-            detail={
-              `${summary.average_goals_per_match.toFixed(
-                2,
-              )} por jogo`
-            }
-            icon={
-              <Goal size={21} />
-            }
-          />
-
-          <MetricCard
-            label="Melhor momento"
-            value={
-              hottestTeam?.team
-              ?? "-"
-            }
-            detail={
-              hottestTeam
-                ? `${hottestTeam.points}/15 pontos`
-                : "Sem dados"
-            }
-            icon={
-              <Flame size={21} />
-            }
-          />
-        </section>
-
-
-        <section className="highlight-grid">
-          <HighlightCard
-            title="Melhor ataque"
-            value={
-              bestAttack?.team
-              ?? "-"
-            }
-            detail={
-              bestAttack
-                ? `${bestAttack.goals_for} gols marcados`
-                : "Sem dados"
-            }
-            icon={
-              <Goal size={20} />
-            }
-          />
-
-          <HighlightCard
-            title="Melhor defesa"
-            value={
-              bestDefense?.team
-              ?? "-"
-            }
-            detail={
-              bestDefense
-                ? `${bestDefense.goals_against} gols sofridos`
-                : "Sem dados"
-            }
-            icon={
-              <Shield size={20} />
-            }
-          />
-
-          <HighlightCard
-            title="Aproveitamento do líder"
-            value={
-              standings[0]
-                ? `${standings[0].performance_pct.toFixed(
-                    2,
-                  )}%`
-                : "-"
-            }
-            detail={
-              standings[0]
-                ? `${standings[0].matches} partidas`
-                : "Sem dados"
-            }
-            icon={
-              <Medal size={20} />
-            }
-          />
-        </section>
-
-
-        <section className="dashboard-grid">
+        <div className="side-column">
           <div className="panel">
             <PanelHeader
-              title="Classificação"
-              subtitle="Tabela atual do campeonato"
+              title="Melhor momento"
+              subtitle="Últimos 5 jogos"
               icon={
-                <Trophy size={19} />
+                <Flame size={19} />
               }
             />
 
-            <div className="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Pos</th>
-                    <th>Clube</th>
-                    <th>J</th>
-                    <th>V</th>
-                    <th>E</th>
-                    <th>D</th>
-                    <th>SG</th>
-                    <th>PTS</th>
-                  </tr>
-                </thead>
 
-                <tbody>
-                  {
-                    standings.map(
-                      (
-                        team,
-                      ) => (
-                        <tr
-                          key={
-                            team.team_id
-                          }
-                        >
-                          <td>
-                            <PositionBadge
-                              position={
-                                team.position
-                              }
-                            />
-                          </td>
+            <div className="form-list">
+              {
+                recentForm
+                  .slice(
+                    0,
+                    6,
+                  )
+                  .map(
+                    (
+                      team,
+                    ) => (
+                      <div
+                        className="form-row"
+                        key={
+                          team.team_id
+                        }
+                      >
+                        <div className="form-team">
+                          <span>
+                            {
+                              team.position
+                            }º
+                          </span>
 
-                          <td className="team-name">
+                          <strong>
                             {
                               team.team
                             }
-                          </td>
-
-                          <td>
-                            {
-                              team.matches
-                            }
-                          </td>
-
-                          <td>
-                            {
-                              team.wins
-                            }
-                          </td>
-
-                          <td>
-                            {
-                              team.draws
-                            }
-                          </td>
-
-                          <td>
-                            {
-                              team.losses
-                            }
-                          </td>
-
-                          <td>
-                            {
-                              team.goal_difference
-                              > 0
-                                ? `+${team.goal_difference}`
-                                : team.goal_difference
-                            }
-                          </td>
-
-                          <td className="points">
-                            {
-                              team.points
-                            }
-                          </td>
-                        </tr>
-                      ),
-                    )
-                  }
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-
-          <div className="side-column">
-            <div className="panel">
-              <PanelHeader
-                title="Melhor momento"
-                subtitle="Últimos 5 jogos"
-                icon={
-                  <Flame size={19} />
-                }
-              />
-
-              <div className="form-list">
-                {
-                  recentForm
-                    .slice(
-                      0,
-                      6,
-                    )
-                    .map(
-                      (
-                        team,
-                      ) => (
-                        <div
-                          className="form-row"
-                          key={
-                            team.team_id
-                          }
-                        >
-                          <div className="form-team">
-                            <span>
-                              {
-                                team.position
-                              }º
-                            </span>
-
-                            <strong>
-                              {
-                                team.team
-                              }
-                            </strong>
-                          </div>
-
-                          <FormSequence
-                            form={
-                              team.form
-                            }
-                          />
-
-                          <b>
-                            {
-                              team.points
-                            }
-                          </b>
+                          </strong>
                         </div>
-                      ),
-                    )
-                }
-              </div>
-            </div>
 
 
-            <div className="panel results-panel">
-              <PanelHeader
-                title="Resultados gerais"
-                subtitle="Distribuição das partidas"
-                icon={
-                  <Activity size={19} />
-                }
-              />
+                        <FormSequence
+                          form={
+                            team.form
+                          }
+                        />
 
-              <ResultBar
-                label="Mandantes"
-                value={
-                  summary.home_wins
-                }
-                total={
-                  summary.played_matches
-                }
-              />
 
-              <ResultBar
-                label="Empates"
-                value={
-                  summary.draws
-                }
-                total={
-                  summary.played_matches
-                }
-              />
-
-              <ResultBar
-                label="Visitantes"
-                value={
-                  summary.away_wins
-                }
-                total={
-                  summary.played_matches
-                }
-              />
+                        <b>
+                          {
+                            team.points
+                          }
+                        </b>
+                      </div>
+                    ),
+                  )
+              }
             </div>
           </div>
-        </section>
-      </main>
-    </div>
+
+
+          <div className="panel results-panel">
+            <PanelHeader
+              title="Resultados gerais"
+              subtitle="Distribuição das partidas"
+              icon={
+                <Activity size={19} />
+              }
+            />
+
+
+            <ResultBar
+              label="Mandantes"
+              value={
+                summary.home_wins
+              }
+              total={
+                summary.played_matches
+              }
+            />
+
+
+            <ResultBar
+              label="Empates"
+              value={
+                summary.draws
+              }
+              total={
+                summary.played_matches
+              }
+            />
+
+
+            <ResultBar
+              label="Visitantes"
+              value={
+                summary.away_wins
+              }
+              total={
+                summary.played_matches
+              }
+            />
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
 
@@ -731,16 +860,21 @@ function PositionBadge({
   let className =
     "position";
 
-  if (position <= 4) {
-    className += " champions";
+  if (
+    position <= 4
+  ) {
+    className +=
+      " champions";
   } else if (
     position <= 6
   ) {
-    className += " continental";
+    className +=
+      " continental";
   } else if (
     position >= 17
   ) {
-    className += " relegation";
+    className +=
+      " relegation";
   }
 
   return (
@@ -819,19 +953,24 @@ function ResultBar({
         </strong>
       </div>
 
+
       <div className="progress-track">
         <div
           className="progress-fill"
           style={{
-            width: `${percentage}%`,
+            width:
+              `${percentage}%`,
           }}
         />
       </div>
 
+
       <small>
-        {percentage.toFixed(
-          1,
-        )}%
+        {
+          percentage.toFixed(
+            1,
+          )
+        }%
       </small>
     </div>
   );

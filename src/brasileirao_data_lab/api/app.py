@@ -3,11 +3,14 @@ from __future__ import annotations
 from typing import Annotated
 
 import pandas as pd
+
 from fastapi import (
     FastAPI,
     Query,
 )
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import (
+    CORSMiddleware,
+)
 from pydantic import BaseModel
 
 from brasileirao_data_lab.analytics.championship import (
@@ -21,14 +24,12 @@ from brasileirao_data_lab.analytics.evolution import (
 from brasileirao_data_lab.database.analytics_bridge import (
     load_matches_for_analytics,
 )
+from brasileirao_data_lab.database.repository import (
+    get_standings_history,
+)
 from brasileirao_data_lab.database.session import (
     SessionLocal,
 )
-
-
-# =============================================================================
-# Schemas
-# =============================================================================
 
 
 class HealthResponse(BaseModel):
@@ -88,9 +89,21 @@ class RecentFormResponse(BaseModel):
     form: str
 
 
-# =============================================================================
-# Aplicação
-# =============================================================================
+class EvolutionPointResponse(BaseModel):
+    season: int
+    round: int
+    team_id: int
+    team: str
+    position: int
+    matches: int
+    points: int
+    wins: int
+    draws: int
+    losses: int
+    goals_for: int
+    goals_against: int
+    goal_difference: int
+    performance_pct: float
 
 
 app = FastAPI(
@@ -101,12 +114,6 @@ app = FastAPI(
     ),
     version="0.4.0",
 )
-
-
-# =============================================================================
-# CORS
-# =============================================================================
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -120,21 +127,8 @@ app.add_middleware(
 )
 
 
-# =============================================================================
-# Carregamento
-# =============================================================================
-
-
 def load_api_matches() -> pd.DataFrame:
-    """
-    Carrega as partidas utilizadas pela API.
-
-    O SQLite é a fonte oficial de leitura
-    da V0.4.
-    """
-
     with SessionLocal() as session:
-
         return load_matches_for_analytics(
             session
         )
@@ -143,17 +137,11 @@ def load_api_matches() -> pd.DataFrame:
 def get_matches_season(
     matches: pd.DataFrame,
 ) -> int:
-    """Retorna a temporada mais recente do DataFrame."""
-
-    seasons = (
-        matches[
-            "season"
-        ]
-        .dropna()
-    )
+    seasons = matches[
+        "season"
+    ].dropna()
 
     if seasons.empty:
-
         raise ValueError(
             "Nenhuma temporada encontrada."
         )
@@ -163,34 +151,20 @@ def get_matches_season(
     )
 
 
-# =============================================================================
-# Conversores
-# =============================================================================
-
-
 def build_leader(
     standings: pd.DataFrame,
 ) -> LeaderResponse | None:
-    """Monta o líder atual do campeonato."""
-
     if standings.empty:
-
         return None
 
-    leader = standings.iloc[
-        0
-    ]
+    leader = standings.iloc[0]
 
     return LeaderResponse(
         team_id=int(
-            leader[
-                "team_id"
-            ]
+            leader["team_id"]
         ),
         team=str(
-            leader[
-                "team"
-            ]
+            leader["team"]
         ),
         position=int(
             leader[
@@ -198,9 +172,7 @@ def build_leader(
             ]
         ),
         points=int(
-            leader[
-                "points"
-            ]
+            leader["points"]
         ),
     )
 
@@ -208,12 +180,9 @@ def build_leader(
 def build_standings_response(
     standings: pd.DataFrame,
 ) -> list[StandingResponse]:
-    """Converte a classificação para o schema da API."""
-
     result = []
 
     for _, team in standings.iterrows():
-
         result.append(
             StandingResponse(
                 position=int(
@@ -222,39 +191,25 @@ def build_standings_response(
                     ]
                 ),
                 team_id=int(
-                    team[
-                        "team_id"
-                    ]
+                    team["team_id"]
                 ),
                 team=str(
-                    team[
-                        "team"
-                    ]
+                    team["team"]
                 ),
                 matches=int(
-                    team[
-                        "matches"
-                    ]
+                    team["matches"]
                 ),
                 wins=int(
-                    team[
-                        "wins"
-                    ]
+                    team["wins"]
                 ),
                 draws=int(
-                    team[
-                        "draws"
-                    ]
+                    team["draws"]
                 ),
                 losses=int(
-                    team[
-                        "losses"
-                    ]
+                    team["losses"]
                 ),
                 goals_for=int(
-                    team[
-                        "goals_for"
-                    ]
+                    team["goals_for"]
                 ),
                 goals_against=int(
                     team[
@@ -267,9 +222,7 @@ def build_standings_response(
                     ]
                 ),
                 points=int(
-                    team[
-                        "points"
-                    ]
+                    team["points"]
                 ),
                 performance_pct=float(
                     team[
@@ -285,12 +238,9 @@ def build_standings_response(
 def build_recent_form_response(
     recent_form: pd.DataFrame,
 ) -> list[RecentFormResponse]:
-    """Converte a forma recente para o schema da API."""
-
     result = []
 
     for _, team in recent_form.iterrows():
-
         result.append(
             RecentFormResponse(
                 position=int(
@@ -299,14 +249,10 @@ def build_recent_form_response(
                     ]
                 ),
                 team_id=int(
-                    team[
-                        "team_id"
-                    ]
+                    team["team_id"]
                 ),
                 team=str(
-                    team[
-                        "team"
-                    ]
+                    team["team"]
                 ),
                 matches=int(
                     team[
@@ -354,19 +300,12 @@ def build_recent_form_response(
                     ]
                 ),
                 form=str(
-                    team[
-                        "recent_form"
-                    ]
+                    team["recent_form"]
                 ),
             )
         )
 
     return result
-
-
-# =============================================================================
-# Rotas
-# =============================================================================
 
 
 @app.get(
@@ -375,8 +314,6 @@ def build_recent_form_response(
     tags=["System"],
 )
 def health() -> HealthResponse:
-    """Verifica se a API está disponível."""
-
     return HealthResponse(
         status="ok",
         version=app.version,
@@ -388,21 +325,24 @@ def health() -> HealthResponse:
     response_model=ChampionshipSummaryResponse,
     tags=["Championship"],
 )
-def championship_summary() -> ChampionshipSummaryResponse:
-    """Retorna o resumo atual do campeonato."""
-
+def championship_summary(
+) -> ChampionshipSummaryResponse:
     matches = load_api_matches()
 
-    summary = get_championship_summary(
-        matches
+    summary = (
+        get_championship_summary(
+            matches
+        )
     )
 
     standings = get_team_stats(
         matches
     )
 
-    latest_round = get_latest_played_round(
-        matches
+    latest_round = (
+        get_latest_played_round(
+            matches
+        )
     )
 
     return ChampionshipSummaryResponse(
@@ -464,12 +404,13 @@ def championship_summary() -> ChampionshipSummaryResponse:
 
 @app.get(
     "/api/standings",
-    response_model=list[StandingResponse],
+    response_model=list[
+        StandingResponse
+    ],
     tags=["Championship"],
 )
-def standings() -> list[StandingResponse]:
-    """Retorna a classificação calculada."""
-
+def standings(
+) -> list[StandingResponse]:
     matches = load_api_matches()
 
     standings_dataframe = (
@@ -485,7 +426,9 @@ def standings() -> list[StandingResponse]:
 
 @app.get(
     "/api/recent-form",
-    response_model=list[RecentFormResponse],
+    response_model=list[
+        RecentFormResponse
+    ],
     tags=["Championship"],
 )
 def recent_form(
@@ -501,8 +444,6 @@ def recent_form(
         ),
     ] = 5,
 ) -> list[RecentFormResponse]:
-    """Retorna o ranking de forma recente."""
-
     matches = load_api_matches()
 
     recent_dataframe = (
@@ -515,3 +456,92 @@ def recent_form(
     return build_recent_form_response(
         recent_dataframe
     )
+
+
+@app.get(
+    "/api/evolution",
+    response_model=list[
+        EvolutionPointResponse
+    ],
+    tags=["Championship"],
+)
+def evolution(
+    team_ids: Annotated[
+        list[int] | None,
+        Query(
+            description=(
+                "IDs dos clubes que devem "
+                "ser retornados. Pode ser "
+                "informado mais de uma vez."
+            ),
+        ),
+    ] = None,
+) -> list[EvolutionPointResponse]:
+    matches = load_api_matches()
+
+    season = get_matches_season(
+        matches
+    )
+
+    with SessionLocal() as session:
+        history = (
+            get_standings_history(
+                session=session,
+                season=season,
+                team_ids=team_ids,
+            )
+        )
+
+    return [
+        EvolutionPointResponse(
+            season=int(
+                point["season"]
+            ),
+            round=int(
+                point["round"]
+            ),
+            team_id=int(
+                point["team_id"]
+            ),
+            team=str(
+                point["team"]
+            ),
+            position=int(
+                point["position"]
+            ),
+            matches=int(
+                point["matches"]
+            ),
+            points=int(
+                point["points"]
+            ),
+            wins=int(
+                point["wins"]
+            ),
+            draws=int(
+                point["draws"]
+            ),
+            losses=int(
+                point["losses"]
+            ),
+            goals_for=int(
+                point["goals_for"]
+            ),
+            goals_against=int(
+                point[
+                    "goals_against"
+                ]
+            ),
+            goal_difference=int(
+                point[
+                    "goal_difference"
+                ]
+            ),
+            performance_pct=float(
+                point[
+                    "performance_pct"
+                ]
+            ),
+        )
+        for point in history
+    ]

@@ -45,22 +45,16 @@ def resolve_team_from_database(
         "Palmeiras"
     """
 
-    # -------------------------------------------------------------------------
-    # ID inteiro
-    # -------------------------------------------------------------------------
-
     if isinstance(
         identifier,
         int,
     ):
-
         team = session.get(
             Team,
             identifier,
         )
 
         if team is None:
-
             raise ValueError(
                 f"Clube não encontrado: "
                 f"{identifier}"
@@ -73,18 +67,12 @@ def resolve_team_from_database(
     ).strip()
 
     if not identifier_text:
-
         raise ValueError(
             "Identificador do clube "
             "não pode ser vazio."
         )
 
-    # -------------------------------------------------------------------------
-    # ID numérico em texto
-    # -------------------------------------------------------------------------
-
     if identifier_text.isdigit():
-
         team = session.get(
             Team,
             int(
@@ -93,7 +81,6 @@ def resolve_team_from_database(
         )
 
         if team is None:
-
             raise ValueError(
                 f"Clube não encontrado: "
                 f"{identifier}"
@@ -104,10 +91,6 @@ def resolve_team_from_database(
     normalized_name = (
         identifier_text.casefold()
     )
-
-    # -------------------------------------------------------------------------
-    # Nome exato
-    # -------------------------------------------------------------------------
 
     exact_statement = (
         select(
@@ -126,12 +109,7 @@ def resolve_team_from_database(
     )
 
     if exact_team is not None:
-
         return exact_team
-
-    # -------------------------------------------------------------------------
-    # Busca parcial
-    # -------------------------------------------------------------------------
 
     partial_statement = (
         select(
@@ -156,7 +134,6 @@ def resolve_team_from_database(
     )
 
     if not candidates:
-
         raise ValueError(
             f"Clube não encontrado: "
             f"{identifier}"
@@ -165,7 +142,6 @@ def resolve_team_from_database(
     if len(
         candidates
     ) > 1:
-
         names = ", ".join(
             team.name
             for team in candidates
@@ -382,7 +358,6 @@ def get_recent_team_matches_from_database(
     """
 
     if limit <= 0:
-
         raise ValueError(
             "limit deve ser maior que zero."
         )
@@ -454,7 +429,6 @@ def get_upcoming_team_matches_from_database(
         limit is not None
         and limit <= 0
     ):
-
         raise ValueError(
             "limit deve ser maior que zero."
         )
@@ -495,7 +469,6 @@ def get_upcoming_team_matches_from_database(
     )
 
     if limit is not None:
-
         statement = statement.limit(
             limit
         )
@@ -595,7 +568,109 @@ def get_standings_by_round(
 
 
 # =============================================================================
-# Histórico de classificação
+# Histórico geral da classificação
+# =============================================================================
+
+
+def get_standings_history(
+    session: Session,
+    season: int,
+    team_ids: list[int] | None = None,
+) -> list[dict[str, Any]]:
+    """
+    Retorna a evolução da classificação
+    rodada por rodada.
+
+    Quando team_ids for informado,
+    retorna apenas os clubes selecionados.
+
+    Quando team_ids for None,
+    retorna todos os clubes.
+    """
+
+    statement = (
+        select(
+            StandingsSnapshot.season.label(
+                "season"
+            ),
+            StandingsSnapshot.round.label(
+                "round"
+            ),
+            StandingsSnapshot.team_id.label(
+                "team_id"
+            ),
+            Team.name.label(
+                "team"
+            ),
+            StandingsSnapshot.position.label(
+                "position"
+            ),
+            StandingsSnapshot.matches.label(
+                "matches"
+            ),
+            StandingsSnapshot.points.label(
+                "points"
+            ),
+            StandingsSnapshot.wins.label(
+                "wins"
+            ),
+            StandingsSnapshot.draws.label(
+                "draws"
+            ),
+            StandingsSnapshot.losses.label(
+                "losses"
+            ),
+            StandingsSnapshot.goals_for.label(
+                "goals_for"
+            ),
+            StandingsSnapshot.goals_against.label(
+                "goals_against"
+            ),
+            StandingsSnapshot.goal_difference.label(
+                "goal_difference"
+            ),
+            StandingsSnapshot.performance_pct.label(
+                "performance_pct"
+            ),
+        )
+        .join(
+            Team,
+            StandingsSnapshot.team_id
+            == Team.team_id,
+        )
+        .where(
+            StandingsSnapshot.season
+            == season,
+        )
+    )
+
+    if team_ids:
+        statement = statement.where(
+            StandingsSnapshot.team_id.in_(
+                team_ids
+            )
+        )
+
+    statement = statement.order_by(
+        StandingsSnapshot.round,
+        StandingsSnapshot.position,
+        Team.name,
+    )
+
+    rows = session.execute(
+        statement
+    ).mappings().all()
+
+    return [
+        dict(
+            row
+        )
+        for row in rows
+    ]
+
+
+# =============================================================================
+# Histórico de classificação de um clube
 # =============================================================================
 
 
