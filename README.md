@@ -9,59 +9,93 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v0.4.0-27d684" />
-  <img src="https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white" />
-  <img src="https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi&logoColor=white" />
-  <img src="https://img.shields.io/badge/React-TypeScript-61DAFB?logo=react&logoColor=black" />
-  <img src="https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite&logoColor=white" />
+  <a href="https://brasileirao-data-lab.vercel.app">
+    <img src="https://img.shields.io/badge/App-Online-27d684" alt="App Online" />
+  </a>
+  <a href="https://brasileirao-data-lab-api.onrender.com/docs">
+    <img src="https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white" alt="FastAPI" />
+  </a>
+  <a href="https://github.com/cadupacheco/Brasileirao-Data-Lab/actions/workflows/ci.yml">
+    <img src="https://github.com/cadupacheco/Brasileirao-Data-Lab/actions/workflows/ci.yml/badge.svg" alt="CI" />
+  </a>
+  <img src="https://img.shields.io/badge/version-v0.5.0-27d684" alt="Version v0.5.0" />
+</p>
+
+<p align="center">
+  <a href="https://brasileirao-data-lab.vercel.app"><strong>🌐 Acessar aplicação</strong></a>
+  •
+  <a href="https://brasileirao-data-lab-api.onrender.com/docs"><strong>📚 Swagger da API</strong></a>
 </p>
 
 ---
 
 ## 📌 Sobre o projeto
 
-O **Brasileirão Data Lab** é um projeto de Engenharia e Análise de Dados aplicado ao Campeonato Brasileiro Série A.
+O **Brasileirão Data Lab** é uma plataforma de dados aplicada ao Campeonato Brasileiro Série A.
 
-A aplicação coleta informações da competição, processa os dados, armazena os resultados em banco de dados e disponibiliza análises através de uma API REST e de um dashboard web interativo.
+O projeto coleta informações da competição, processa e valida os dados, persiste os resultados em banco de dados, disponibiliza uma API REST e apresenta as análises em um dashboard web interativo.
 
-O objetivo do projeto é construir uma plataforma completa de dados esportivos, evoluindo desde a coleta das informações até modelos de previsão da classificação final do campeonato.
+A proposta é evoluir o projeto em etapas versionadas, partindo da coleta de dados até chegar a modelos de Machine Learning e previsões da classificação final do campeonato.
+
+---
+
+## 🌐 Aplicação em produção
+
+### Dashboard
+
+**https://brasileirao-data-lab.vercel.app**
+
+Frontend desenvolvido com React + TypeScript e publicado na Vercel.
+
+### API
+
+**https://brasileirao-data-lab-api.onrender.com**
+
+Documentação Swagger:
+
+**https://brasileirao-data-lab-api.onrender.com/docs**
+
+Backend desenvolvido com FastAPI e publicado no Render.
 
 ---
 
 ## 🏗️ Arquitetura
 
 ```text
-CBF
- │
- ▼
-Web Scraping
- │
- ▼
-Processamento e Validação
- │
- ▼
-SQLite
- │
- ├───────────────┐
- ▼               ▼
-Analytics      FastAPI
+                CBF
                  │
                  ▼
-              React
+           Web Scraping
                  │
                  ▼
-             Dashboard
+      Processamento e Validação
+                 │
+                 ▼
+              SQLite
+                 │
+        ┌────────┴────────┐
+        ▼                 ▼
+    Analytics          FastAPI
+                          │
+                          ▼
+                       Render
+                          │
+                          ▼
+                   React + Vite
+                          │
+                          ▼
+                       Vercel
 ```
 
-A aplicação é dividida em três grandes camadas:
+O projeto é dividido em três grandes camadas:
 
 **Data Layer**
 
-Responsável pela coleta, tratamento, validação e persistência dos dados.
+Responsável pela coleta, tratamento, validação, analytics e persistência dos dados.
 
 **Backend**
 
-API REST construída com FastAPI, responsável por disponibilizar os dados processados para outras aplicações.
+API REST construída com FastAPI, responsável por disponibilizar os dados processados.
 
 **Frontend**
 
@@ -71,25 +105,25 @@ Dashboard desenvolvido em React + TypeScript para visualização e exploração 
 
 ## 📊 Dashboard
 
-Atualmente o dashboard possui cinco áreas principais.
+O dashboard possui cinco áreas principais.
 
 ### 🏠 Visão Geral
 
-Resumo do campeonato com informações como:
+Resumo do campeonato com:
 
 - líder atual;
-- quantidade de partidas realizadas;
+- partidas realizadas;
+- jogos restantes;
 - gols marcados;
 - média de gols;
 - melhor ataque;
 - melhor defesa;
 - aproveitamento do líder;
-- desempenho recente dos clubes;
-- distribuição de vitórias e empates.
+- desempenho recente dos clubes.
 
 ### 🏆 Classificação
 
-Tabela completa da Série A contendo:
+Tabela completa da Série A com:
 
 - posição;
 - jogos;
@@ -104,13 +138,13 @@ Tabela completa da Série A contendo:
 
 ### 🛡️ Clubes
 
-Visão individual dos 20 clubes participantes da competição, apresentando seus principais indicadores.
+Visão dos 20 clubes participantes da competição com seus principais indicadores.
 
 ### 📈 Evolução
 
-Visualização da trajetória dos clubes rodada a rodada.
+Visualização rodada a rodada da trajetória dos clubes.
 
-É possível selecionar qualquer combinação entre os 20 clubes e analisar:
+É possível selecionar clubes e alternar entre:
 
 - evolução da posição;
 - evolução da pontuação.
@@ -124,37 +158,60 @@ Consulta das partidas do campeonato com filtros por:
 - jogos realizados;
 - próximos jogos.
 
-As partidas exibem informações como placar, data, horário e local quando disponíveis.
+As partidas apresentam placar, data, horário e local quando disponíveis.
 
 ---
 
 ## 🚀 API REST
 
-O backend utiliza **FastAPI**.
-
-Após iniciar a aplicação, a documentação interativa pode ser acessada em:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-Principais endpoints disponíveis:
+Principais endpoints:
 
 ```text
 GET /api/health
-
 GET /api/championship/summary
-
 GET /api/standings
-
 GET /api/recent-form
-
 GET /api/evolution
-
 GET /api/matches
 ```
 
-Os endpoints permitem acessar informações consolidadas do campeonato, classificação, desempenho recente, evolução dos clubes e partidas.
+Exemplos em produção:
+
+```text
+https://brasileirao-data-lab-api.onrender.com/api/health
+https://brasileirao-data-lab-api.onrender.com/api/standings
+https://brasileirao-data-lab-api.onrender.com/api/championship/summary
+```
+
+---
+
+## 🔄 CI/CD
+
+A partir da `v0.5.0`, o projeto utiliza **GitHub Actions** para validar automaticamente alterações enviadas ao repositório.
+
+A pipeline executa dois jobs independentes:
+
+```text
+Push / Pull Request
+        │
+        ├──────────────┐
+        ▼              ▼
+ Python Tests      React Build
+     pytest        npm run build
+        │              │
+        └──────┬───────┘
+               ▼
+              CI
+```
+
+Validações atuais:
+
+- testes automatizados Python com Pytest;
+- instalação do projeto Python;
+- instalação do frontend com `npm ci`;
+- build de produção do React/Vite.
+
+O backend é publicado no **Render** e o frontend na **Vercel**.
 
 ---
 
@@ -180,11 +237,14 @@ Os endpoints permitem acessar informações consolidadas do campeonato, classifi
 - Recharts
 - Lucide React
 
-### Qualidade
+### Qualidade e infraestrutura
 
 - Pytest
 - Git
 - GitHub
+- GitHub Actions
+- Vercel
+- Render
 
 ---
 
@@ -193,9 +253,14 @@ Os endpoints permitem acessar informações consolidadas do campeonato, classifi
 ```text
 Brasileirao-Data-Lab/
 │
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
 ├── data/
 │   ├── processed/
-│   └── raw/
+│   ├── raw/
+│   └── brasileirao.db
 │
 ├── frontend/
 │   ├── public/
@@ -209,6 +274,8 @@ Brasileirao-Data-Lab/
 │
 ├── reports/
 │   └── figures/
+│
+├── scripts/
 │
 ├── src/
 │   └── brasileirao_data_lab/
@@ -234,55 +301,36 @@ Brasileirao-Data-Lab/
 
 ---
 
-## ⚙️ Executando o projeto
+## ⚙️ Executando localmente
 
 ### 1. Clone o repositório
 
 ```bash
 git clone https://github.com/cadupacheco/Brasileirao-Data-Lab.git
-```
-
-Entre na pasta:
-
-```bash
 cd Brasileirao-Data-Lab
 ```
 
----
+### 2. Crie e ative o ambiente virtual
 
-### 2. Crie o ambiente virtual
-
-No Windows:
+Windows:
 
 ```powershell
 python -m venv .venv
-```
-
-Ative:
-
-```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
----
-
-### 3. Instale as dependências Python
+### 3. Instale as dependências e o projeto
 
 ```powershell
 pip install -r requirements.txt
+pip install -e .
 ```
 
----
-
-### 4. Execute o pipeline de dados
+### 4. Atualize os dados
 
 ```powershell
 python main.py
 ```
-
-O pipeline realiza a coleta e o processamento dos dados necessários para a aplicação.
-
----
 
 ### 5. Inicie a API
 
@@ -290,32 +338,23 @@ O pipeline realiza a coleta e o processamento dos dados necessários para a apli
 uvicorn brasileirao_data_lab.api.app:app --reload --port 8000
 ```
 
-Swagger:
+Swagger local:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
----
-
-### 6. Instale as dependências do frontend
+### 6. Inicie o frontend
 
 Em outro terminal:
 
 ```powershell
 cd frontend
 npm install
-```
-
----
-
-### 7. Inicie o frontend
-
-```powershell
 npm run dev
 ```
 
-A aplicação ficará disponível em:
+Frontend local:
 
 ```text
 http://localhost:5173
@@ -325,18 +364,23 @@ http://localhost:5173
 
 ## 🧪 Testes
 
-A aplicação possui testes automatizados para diferentes camadas do projeto.
-
-Para executar:
+Execute:
 
 ```powershell
 pytest -q
 ```
 
-Estado atual da versão `v0.4.0`:
+Estado validado da `v0.5.0`:
 
 ```text
 123 passed
+```
+
+Build do frontend:
+
+```powershell
+cd frontend
+npm run build
 ```
 
 ---
@@ -349,8 +393,8 @@ Estado atual da versão `v0.4.0`:
 | `v0.2` | Analytics | ✅ Concluído |
 | `v0.3` | Banco de dados | ✅ Concluído |
 | `v0.4` | FastAPI + React Dashboard | ✅ Concluído |
-| `v0.5` | Deploy + CI/CD | 🔜 Próxima versão |
-| `v0.6` | Machine Learning e previsões | 📋 Planejado |
+| `v0.5` | Deploy + CI/CD | ✅ Concluído |
+| `v0.6` | Machine Learning e previsões | 🔜 Próxima versão |
 | `v0.7` | Atualização automática dos dados | 📋 Planejado |
 | `v1.0` | Plataforma completa | 🎯 Objetivo |
 
@@ -358,23 +402,24 @@ Estado atual da versão `v0.4.0`:
 
 ## 🔮 Próximas evoluções
 
-Entre as próximas funcionalidades planejadas estão:
+A próxima grande etapa será a `v0.6`, focada em Machine Learning e simulação do campeonato.
 
-- publicação do frontend e backend;
-- integração contínua com GitHub Actions;
-- atualização automática dos dados;
-- modelos de Machine Learning;
+Funcionalidades planejadas:
+
 - previsão da classificação final;
 - probabilidade de título;
 - probabilidade de classificação para competições continentais;
 - probabilidade de rebaixamento;
-- simulação das rodadas restantes.
+- simulação das partidas restantes;
+- comparação entre classificação atual e classificação prevista.
+
+Depois, a `v0.7` será focada em automatizar a atualização dos dados.
 
 ---
 
 ## 💡 Objetivo
 
-Além da análise esportiva, o projeto funciona como laboratório para aplicação prática de conceitos de:
+Além da análise esportiva, o projeto funciona como laboratório para aplicação prática de:
 
 - Engenharia de Software;
 - Engenharia de Dados;
@@ -383,10 +428,9 @@ Além da análise esportiva, o projeto funciona como laboratório para aplicaç�
 - desenvolvimento frontend;
 - testes automatizados;
 - CI/CD;
+- deploy em nuvem;
 - Machine Learning;
 - visualização de dados.
-
-A ideia é continuar evoluindo o projeto incrementalmente, mantendo cada grande etapa versionada no Git.
 
 ---
 
