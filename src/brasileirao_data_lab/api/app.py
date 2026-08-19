@@ -28,6 +28,12 @@ from brasileirao_data_lab.analytics.championship import (
 from brasileirao_data_lab.analytics.evolution import (
     get_latest_played_round,
 )
+from brasileirao_data_lab.api.prediction_service import (
+    get_match_predictions,
+    get_standings_predictions,
+    load_match_predictions,
+    load_season_simulation,
+)
 from brasileirao_data_lab.database.analytics_bridge import (
     load_matches_for_analytics,
 )
@@ -51,6 +57,12 @@ MatchFilterStatus = Literal[
 MatchResponseStatus = Literal[
     "played",
     "upcoming",
+]
+
+PredictionResult = Literal[
+    "HOME",
+    "DRAW",
+    "AWAY",
 ]
 
 
@@ -151,13 +163,60 @@ class MatchResponse(BaseModel):
     status: MatchResponseStatus
 
 
+class MatchPredictionResponse(BaseModel):
+    season: int
+    round: int
+    match_id: int
+    date: date | None
+    time: time | None
+
+    home_team_id: int
+    home_team: str
+    home_team_key: str
+
+    away_team_id: int
+    away_team: str
+    away_team_key: str
+
+    home_probability: float
+    draw_probability: float
+    away_probability: float
+
+    predicted_result: PredictionResult
+
+    home_probability_pct: float
+    draw_probability_pct: float
+    away_probability_pct: float
+
+
+class StandingPredictionResponse(BaseModel):
+    projected_position: int
+    season: int
+    team_key: str
+    team_name: str
+    simulations: int
+
+    expected_points: float
+    average_position: float
+
+    champion_probability: float
+    top4_probability: float
+    top6_probability: float
+    relegation_probability: float
+
+    champion_probability_pct: float
+    top4_probability_pct: float
+    top6_probability_pct: float
+    relegation_probability_pct: float
+
+
 app = FastAPI(
     title="Brasileirão Data Lab API",
     description=(
         "API REST para acesso aos dados e Analytics "
         "do Campeonato Brasileiro Série A."
     ),
-    version="0.5.0",
+    version="0.6.0",
 )
 
 app.add_middleware(
@@ -767,3 +826,74 @@ def championship_matches(
         )
 
     return result
+
+
+@app.get(
+    "/api/predictions/matches",
+    response_model=list[
+        MatchPredictionResponse
+    ],
+    tags=["Predictions"],
+)
+def prediction_matches(
+    round_number: Annotated[
+        int | None,
+        Query(
+            ge=1,
+            le=38,
+            description=(
+                "Filtra previsões por rodada."
+            ),
+        ),
+    ] = None,
+    team_id: Annotated[
+        int | None,
+        Query(
+            gt=0,
+            description=(
+                "Filtra previsões por clube."
+            ),
+        ),
+    ] = None,
+) -> list[MatchPredictionResponse]:
+    predictions = (
+        load_match_predictions()
+    )
+
+    result = get_match_predictions(
+        dataframe=predictions,
+        round_number=round_number,
+        team_id=team_id,
+    )
+
+    return [
+        MatchPredictionResponse(
+            **prediction
+        )
+        for prediction in result
+    ]
+
+
+@app.get(
+    "/api/predictions/standings",
+    response_model=list[
+        StandingPredictionResponse
+    ],
+    tags=["Predictions"],
+)
+def prediction_standings(
+) -> list[StandingPredictionResponse]:
+    simulation = (
+        load_season_simulation()
+    )
+
+    result = get_standings_predictions(
+        simulation
+    )
+
+    return [
+        StandingPredictionResponse(
+            **team
+        )
+        for team in result
+    ]

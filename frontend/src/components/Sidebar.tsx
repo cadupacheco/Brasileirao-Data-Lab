@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  Bot,
   CalendarDays,
   Database,
   Goal,
@@ -45,6 +46,11 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
     path: "/jogos",
     label: "Jogos",
     icon: <CalendarDays size={18} />,
+  },
+  {
+    path: "/previsoes",
+    label: "Previsões",
+    icon: <Bot size={18} />,
   },
 ];
 

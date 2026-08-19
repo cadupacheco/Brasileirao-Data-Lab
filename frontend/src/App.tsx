@@ -11,6 +11,7 @@ import ClubsPage from "./pages/ClubsPage";
 import EvolutionPage from "./pages/EvolutionPage";
 import GamesPage from "./pages/GamesPage";
 import OverviewPage from "./pages/OverviewPage";
+import PredictionsPage from "./pages/PredictionsPage";
 import StandingsPage from "./pages/StandingsPage";
 
 import "./App.css";
@@ -56,6 +57,13 @@ function App() {
               path="/jogos"
               element={
                 <GamesPage />
+              }
+            />
+
+            <Route
+              path="/previsoes"
+              element={
+                <PredictionsPage />
               }
             />
 

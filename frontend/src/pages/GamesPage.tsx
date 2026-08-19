@@ -1,5 +1,6 @@
 import {
   Activity,
+  Bot,
   CalendarDays,
   Clock3,
   MapPin,
@@ -7,18 +8,21 @@ import {
 
 import {
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
 import {
   getChampionshipSummary,
   getMatches,
+  getMatchPredictions,
   getStandings,
 } from "../api";
 
 import type {
   ChampionshipMatch,
   ChampionshipSummary,
+  MatchPrediction,
   MatchStatus,
   Standing,
 } from "../api";
@@ -41,6 +45,11 @@ function GamesPage() {
     matches,
     setMatches,
   ] = useState<ChampionshipMatch[]>([]);
+
+  const [
+    predictions,
+    setPredictions,
+  ] = useState<MatchPrediction[]>([]);
 
   const [
     selectedRound,
@@ -126,33 +135,47 @@ function GamesPage() {
 
   useEffect(
     () => {
-      async function loadMatches() {
+      async function loadMatchesAndPredictions() {
         try {
           setMatchesLoading(true);
           setError(null);
 
-          const matchData =
-            await getMatches({
-              roundNumber:
-                selectedRound
-                  ? Number(
-                      selectedRound,
-                    )
-                  : undefined,
+          const roundNumber =
+            selectedRound
+              ? Number(
+                  selectedRound,
+                )
+              : undefined;
 
-              teamId:
-                selectedTeam
-                  ? Number(
-                      selectedTeam,
-                    )
-                  : undefined,
+          const teamId =
+            selectedTeam
+              ? Number(
+                  selectedTeam,
+                )
+              : undefined;
 
+          const [
+            matchData,
+            predictionData,
+          ] = await Promise.all([
+            getMatches({
+              roundNumber,
+              teamId,
               status:
                 selectedStatus,
-            });
+            }),
+            getMatchPredictions({
+              roundNumber,
+              teamId,
+            }),
+          ]);
 
           setMatches(
             matchData,
+          );
+
+          setPredictions(
+            predictionData,
           );
         } catch (
           requestError
@@ -162,14 +185,14 @@ function GamesPage() {
           );
 
           setError(
-            "Não foi possível carregar as partidas.",
+            "Não foi possível carregar as partidas e previsões.",
           );
         } finally {
           setMatchesLoading(false);
         }
       }
 
-      loadMatches();
+      loadMatchesAndPredictions();
     },
     [
       selectedRound,
@@ -177,6 +200,26 @@ function GamesPage() {
       selectedStatus,
     ],
   );
+
+
+  const predictionByMatchId =
+    useMemo(
+      () => {
+        return new Map(
+          predictions.map(
+            (
+              prediction,
+            ) => [
+              prediction.match_id,
+              prediction,
+            ],
+          ),
+        );
+      },
+      [
+        predictions,
+      ],
+    );
 
 
   if (loading) {
@@ -242,7 +285,9 @@ function GamesPage() {
 
           <p>
             Partidas realizadas e futuras
-            da Série A {summary?.season}.
+            da Série A {summary?.season},
+            agora com probabilidades do
+            modelo de Machine Learning.
           </p>
         </div>
 
@@ -475,6 +520,11 @@ function GamesPage() {
                 match={
                   match
                 }
+                prediction={
+                  predictionByMatchId.get(
+                    match.match_id,
+                  )
+                }
               />
             ),
           )
@@ -487,8 +537,10 @@ function GamesPage() {
 
 function MatchCard({
   match,
+  prediction,
 }: {
   match: ChampionshipMatch;
+  prediction?: MatchPrediction;
 }) {
   const played =
     match.status
@@ -581,6 +633,20 @@ function MatchCard({
       </div>
 
 
+      {
+        !played
+        && prediction
+          ? (
+              <PredictionStrip
+                prediction={
+                  prediction
+                }
+              />
+            )
+          : null
+      }
+
+
       <div className="match-meta">
         <div>
           <CalendarDays
@@ -617,6 +683,178 @@ function MatchCard({
         </div>
       </div>
     </article>
+  );
+}
+
+
+function PredictionStrip({
+  prediction,
+}: {
+  prediction: MatchPrediction;
+}) {
+  return (
+    <div
+      style={{
+        margin: "0 18px 16px",
+        padding: "12px 14px",
+        borderRadius: "12px",
+        border:
+          "1px solid rgba(99, 102, 241, 0.24)",
+        background:
+          "rgba(99, 102, 241, 0.08)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "7px",
+          marginBottom: "9px",
+          fontSize: "12px",
+          fontWeight: 700,
+          letterSpacing: "0.04em",
+          textTransform: "uppercase",
+          opacity: 0.82,
+        }}
+      >
+        <Bot size={15} />
+
+        Previsão do modelo
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "1fr auto 1fr auto 1fr",
+          alignItems: "center",
+          gap: "8px",
+          fontSize: "13px",
+        }}
+      >
+        <ProbabilityItem
+          label={
+            shortTeamName(
+              prediction.home_team,
+            )
+          }
+          value={
+            prediction.home_probability_pct
+          }
+          highlighted={
+            prediction.predicted_result
+            === "HOME"
+          }
+        />
+
+        <span
+          style={{
+            opacity: 0.45,
+          }}
+        >
+          •
+        </span>
+
+        <ProbabilityItem
+          label="X"
+          value={
+            prediction.draw_probability_pct
+          }
+          highlighted={
+            prediction.predicted_result
+            === "DRAW"
+          }
+        />
+
+        <span
+          style={{
+            opacity: 0.45,
+          }}
+        >
+          •
+        </span>
+
+        <ProbabilityItem
+          label={
+            shortTeamName(
+              prediction.away_team,
+            )
+          }
+          value={
+            prediction.away_probability_pct
+          }
+          highlighted={
+            prediction.predicted_result
+            === "AWAY"
+          }
+        />
+      </div>
+    </div>
+  );
+}
+
+
+function ProbabilityItem({
+  label,
+  value,
+  highlighted,
+}: {
+  label: string;
+  value: number;
+  highlighted: boolean;
+}) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: "5px",
+        fontWeight:
+          highlighted
+            ? 800
+            : 600,
+        opacity:
+          highlighted
+            ? 1
+            : 0.72,
+        whiteSpace: "nowrap",
+      }}
+    >
+      <span>
+        {label}
+      </span>
+
+      <strong>
+        {value.toFixed(1)}%
+      </strong>
+    </div>
+  );
+}
+
+
+function shortTeamName(
+  teamName: string,
+) {
+  const replacements:
+    Record<string, string> = {
+      "Athletico Paranaense":
+        "Athletico-PR",
+      "Atlético Mineiro":
+        "Atlético-MG",
+      "Red Bull Bragantino":
+        "Bragantino",
+      "Vasco da Gama Saf":
+        "Vasco",
+      "Santos FC":
+        "Santos",
+    };
+
+  return (
+    replacements[
+      teamName
+    ]
+    ?? teamName
   );
 }
 
