@@ -1,11 +1,11 @@
 # ⚽ Brasileirão Data Lab
 
 <p align="center">
-  Plataforma de dados para coleta, processamento, análise e visualização do Campeonato Brasileiro Série A.
+  Plataforma de dados para coleta, processamento, análise, Machine Learning e visualização do Campeonato Brasileiro Série A.
 </p>
 
 <p align="center">
-  <strong>Python • FastAPI • React • TypeScript • SQLite • Pandas</strong>
+  <strong>Python • FastAPI • React • TypeScript • SQLite • Pandas • Scikit-learn</strong>
 </p>
 
 <p align="center">
@@ -18,7 +18,7 @@
   <a href="https://github.com/cadupacheco/Brasileirao-Data-Lab/actions/workflows/ci.yml">
     <img src="https://github.com/cadupacheco/Brasileirao-Data-Lab/actions/workflows/ci.yml/badge.svg" alt="CI" />
   </a>
-  <img src="https://img.shields.io/badge/version-v0.5.0-27d684" alt="Version v0.5.0" />
+  <img src="https://img.shields.io/badge/version-v0.6.0-27d684" alt="Version v0.6.0" />
 </p>
 
 <p align="center">
@@ -33,9 +33,9 @@
 
 O **Brasileirão Data Lab** é uma plataforma de dados aplicada ao Campeonato Brasileiro Série A.
 
-O projeto coleta informações da competição, processa e valida os dados, persiste os resultados em banco de dados, disponibiliza uma API REST e apresenta as análises em um dashboard web interativo.
+O projeto coleta informações da competição, processa e valida os dados, persiste os resultados em banco de dados, disponibiliza uma API REST, apresenta análises em um dashboard web e utiliza Machine Learning para gerar probabilidades de partidas e projeções do campeonato.
 
-A proposta é evoluir o projeto em etapas versionadas, partindo da coleta de dados até chegar a modelos de Machine Learning e previsões da classificação final do campeonato.
+A evolução acontece em etapas versionadas, partindo da coleta de dados e avançando por analytics, banco de dados, API, frontend, deploy e modelos preditivos.
 
 ---
 
@@ -62,50 +62,147 @@ Backend desenvolvido com FastAPI e publicado no Render.
 ## 🏗️ Arquitetura
 
 ```text
-                CBF
-                 │
-                 ▼
-           Web Scraping
-                 │
-                 ▼
-      Processamento e Validação
-                 │
-                 ▼
-              SQLite
-                 │
-        ┌────────┴────────┐
-        ▼                 ▼
-    Analytics          FastAPI
-                          │
-                          ▼
-                       Render
-                          │
-                          ▼
-                   React + Vite
-                          │
-                          ▼
-                       Vercel
+                 CBF
+                  │
+                  ▼
+            Web Scraping
+                  │
+                  ▼
+       Processamento e Validação
+                  │
+          ┌───────┴────────┐
+          ▼                ▼
+       SQLite         Dataset histórico
+          │                │
+          ▼                ▼
+      Analytics       Feature Engineering
+          │                │
+          │                ▼
+          │          Random Forest
+          │                │
+          │        ┌───────┴────────┐
+          │        ▼                ▼
+          │   Prob. por jogo    Monte Carlo
+          │        │                │
+          └────────┴───────┬────────┘
+                           ▼
+                        FastAPI
+                           │
+                           ▼
+                         Render
+                           │
+                           ▼
+                    React + Vite
+                           │
+                           ▼
+                        Vercel
 ```
 
-O projeto é dividido em três grandes camadas:
+O projeto é dividido em quatro grandes camadas:
 
 **Data Layer**
 
 Responsável pela coleta, tratamento, validação, analytics e persistência dos dados.
 
+**Machine Learning**
+
+Responsável pelo dataset histórico, feature engineering, Elo, confrontos diretos, treinamento, avaliação, probabilidades de partidas e simulação do campeonato.
+
 **Backend**
 
-API REST construída com FastAPI, responsável por disponibilizar os dados processados.
+API REST construída com FastAPI, responsável por disponibilizar os dados processados e previsões.
 
 **Frontend**
 
-Dashboard desenvolvido em React + TypeScript para visualização e exploração dos dados do campeonato.
+Dashboard desenvolvido em React + TypeScript para visualização e exploração dos dados e projeções do campeonato.
+
+---
+
+## 🤖 Machine Learning
+
+A `v0.6.0` adiciona o primeiro motor preditivo do projeto.
+
+### Dataset histórico
+
+Foram coletadas as temporadas de **2021 a 2026**, totalizando:
+
+- 2.280 partidas no histórico;
+- 2.125 partidas disputadas;
+- 155 partidas futuras no snapshot utilizado pela versão.
+
+### Feature engineering
+
+As features são reconstruídas de forma cronológica para evitar vazamento de informação.
+
+Entre os sinais utilizados estão:
+
+- pontos por jogo;
+- saldo de gols por jogo;
+- forma recente em 5 e 10 partidas;
+- desempenho como mandante e visitante;
+- médias recentes de gols;
+- rating Elo;
+- vantagem de mando no Elo;
+- confrontos diretos históricos;
+- forma recente do confronto direto.
+
+### Modelos avaliados
+
+Foram comparados:
+
+- Regressão Logística multinomial;
+- Random Forest;
+- Gradient Boosting.
+
+A seleção foi feita por backtest temporal com validações em 2023, 2024 e 2025, priorizando:
+
+1. Log Loss;
+2. Brier Score;
+3. Accuracy como critério secundário.
+
+O **Random Forest** apresentou o melhor resultado agregado e foi escolhido como modelo principal da versão.
+
+### Calibração
+
+Foi testado Temperature Scaling.
+
+Como a calibração não melhorou Log Loss e Brier na referência de 2026, a versão utiliza as probabilidades brutas do Random Forest.
+
+### Previsões de partidas
+
+Cada partida futura recebe probabilidades para:
+
+```text
+Mandante
+Empate
+Visitante
+```
+
+Exemplo:
+
+```text
+Fluminense 67.0% • X 19.2% • Remo 13.8%
+```
+
+### Monte Carlo
+
+O restante do campeonato é simulado **10.000 vezes** com seed fixa para reprodutibilidade.
+
+As simulações produzem:
+
+- posição projetada;
+- pontos esperados;
+- posição média;
+- probabilidade de título;
+- probabilidade de G4;
+- probabilidade de Top 6;
+- probabilidade de rebaixamento.
 
 ---
 
 ## 📊 Dashboard
 
-O dashboard possui cinco áreas principais.
+O dashboard possui seis áreas principais.
 
 ### 🏠 Visão Geral
 
@@ -158,7 +255,20 @@ Consulta das partidas do campeonato com filtros por:
 - jogos realizados;
 - próximos jogos.
 
-As partidas apresentam placar, data, horário e local quando disponíveis.
+Jogos futuros exibem também as probabilidades do modelo para vitória do mandante, empate e vitória do visitante.
+
+### 🤖 Previsões
+
+Painel preditivo com:
+
+- classificação projetada;
+- pontos esperados;
+- posição média;
+- corrida pelo título;
+- chances de G4;
+- chances de Top 6;
+- risco de rebaixamento;
+- visualização dos resultados das 10.000 simulações.
 
 ---
 
@@ -173,21 +283,23 @@ GET /api/standings
 GET /api/recent-form
 GET /api/evolution
 GET /api/matches
+GET /api/predictions/matches
+GET /api/predictions/standings
 ```
 
-Exemplos em produção:
+Os endpoints de previsões permitem acessar:
 
 ```text
-https://brasileirao-data-lab-api.onrender.com/api/health
-https://brasileirao-data-lab-api.onrender.com/api/standings
-https://brasileirao-data-lab-api.onrender.com/api/championship/summary
+/api/predictions/matches?round_number=24
+/api/predictions/matches?team_id=<id>
+/api/predictions/standings
 ```
 
 ---
 
 ## 🔄 CI/CD
 
-A partir da `v0.5.0`, o projeto utiliza **GitHub Actions** para validar automaticamente alterações enviadas ao repositório.
+Desde a `v0.5.0`, o projeto utiliza **GitHub Actions** para validar automaticamente alterações enviadas ao repositório.
 
 A pipeline executa dois jobs independentes:
 
@@ -222,11 +334,26 @@ O backend é publicado no **Render** e o frontend na **Vercel**.
 - Python
 - FastAPI
 - Pandas
+- NumPy
+- SciPy
+- Scikit-learn
 - SQLAlchemy
 - SQLite
 - BeautifulSoup
 - Requests
 - lxml
+
+### Machine Learning
+
+- Logistic Regression
+- Random Forest
+- Gradient Boosting
+- Elo Rating
+- H2H Features
+- Backtest temporal
+- Log Loss
+- Brier Score
+- Monte Carlo
 
 ### Frontend
 
@@ -258,22 +385,22 @@ Brasileirao-Data-Lab/
 │       └── ci.yml
 │
 ├── data/
+│   ├── ml/
+│   │   ├── features.csv
+│   │   ├── future_predictions.csv
+│   │   ├── matches_history.csv
+│   │   └── season_simulation.csv
 │   ├── processed/
-│   ├── raw/
-│   └── brasileirao.db
+│   └── raw/
 │
 ├── frontend/
 │   ├── public/
 │   └── src/
 │       ├── components/
 │       ├── pages/
+│       │   └── PredictionsPage.tsx
 │       ├── api.ts
 │       └── App.tsx
-│
-├── notebooks/
-│
-├── reports/
-│   └── figures/
 │
 ├── scripts/
 │
@@ -282,6 +409,7 @@ Brasileirao-Data-Lab/
 │       ├── analytics/
 │       ├── api/
 │       ├── database/
+│       ├── ml/
 │       ├── pipelines/
 │       ├── scrapers/
 │       └── utils/
@@ -290,6 +418,7 @@ Brasileirao-Data-Lab/
 │   ├── analytics/
 │   ├── api/
 │   ├── database/
+│   ├── ml/
 │   ├── pipeline/
 │   └── scraper/
 │
@@ -362,6 +491,33 @@ http://localhost:5173
 
 ---
 
+## 🧠 Fluxo de Machine Learning
+
+Os scripts principais da `v0.6.0` são:
+
+```powershell
+python scripts\collect_cbf_history.py
+python scripts\audit_team_identity.py
+python scripts\build_ml_features.py
+python scripts\train_ml_baseline.py
+python scripts\compare_ml_models.py
+python scripts\backtest_ml_models.py
+python scripts\calibrate_ml_model.py
+python scripts\predict_future_matches.py
+python scripts\simulate_season.py
+```
+
+Arquivos gerados:
+
+```text
+data/ml/matches_history.csv
+data/ml/features.csv
+data/ml/future_predictions.csv
+data/ml/season_simulation.csv
+```
+
+---
+
 ## 🧪 Testes
 
 Execute:
@@ -370,18 +526,14 @@ Execute:
 pytest -q
 ```
 
-Estado validado da `v0.5.0`:
-
-```text
-123 passed
-```
-
 Build do frontend:
 
 ```powershell
 cd frontend
 npm run build
 ```
+
+A versão somente é considerada pronta quando os testes Python e o build do frontend passam sem erros.
 
 ---
 
@@ -394,26 +546,23 @@ npm run build
 | `v0.3` | Banco de dados | ✅ Concluído |
 | `v0.4` | FastAPI + React Dashboard | ✅ Concluído |
 | `v0.5` | Deploy + CI/CD | ✅ Concluído |
-| `v0.6` | Machine Learning e previsões | 🔜 Próxima versão |
-| `v0.7` | Atualização automática dos dados | 📋 Planejado |
+| `v0.6` | Machine Learning e previsões | ✅ Concluído |
+| `v0.7` | Atualização automática dos dados | 🔜 Próxima versão |
 | `v1.0` | Plataforma completa | 🎯 Objetivo |
 
 ---
 
 ## 🔮 Próximas evoluções
 
-A próxima grande etapa será a `v0.6`, focada em Machine Learning e simulação do campeonato.
+A próxima grande etapa será a `v0.7`, focada em automatizar a atualização dos dados e manter as previsões sincronizadas com o andamento do campeonato.
 
-Funcionalidades planejadas:
+Entre os próximos objetivos estão:
 
-- previsão da classificação final;
-- probabilidade de título;
-- probabilidade de classificação para competições continentais;
-- probabilidade de rebaixamento;
-- simulação das partidas restantes;
-- comparação entre classificação atual e classificação prevista.
-
-Depois, a `v0.7` será focada em automatizar a atualização dos dados.
+- atualização automática dos resultados;
+- reconstrução automática das features;
+- regeneração automática das probabilidades;
+- nova execução das simulações após atualização dos dados;
+- atualização automática dos dados servidos pela API e pelo frontend.
 
 ---
 
@@ -430,6 +579,8 @@ Além da análise esportiva, o projeto funciona como laboratório para aplicaç�
 - CI/CD;
 - deploy em nuvem;
 - Machine Learning;
+- avaliação probabilística;
+- simulação Monte Carlo;
 - visualização de dados.
 
 ---
@@ -445,5 +596,5 @@ GitHub: [@cadupacheco](https://github.com/cadupacheco)
 ---
 
 <p align="center">
-  ⚽ Dados, código e futebol no mesmo campo.
+  ⚽ Dados, código, probabilidade e futebol no mesmo campo.
 </p>

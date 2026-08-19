@@ -103,6 +103,63 @@ export interface MatchFilters {
   status?: MatchStatus;
 }
 
+export type PredictionResult =
+  | "HOME"
+  | "DRAW"
+  | "AWAY";
+
+export interface MatchPrediction {
+  season: number;
+  round: number;
+  match_id: number;
+  date: string | null;
+  time: string | null;
+
+  home_team_id: number;
+  home_team: string;
+  home_team_key: string;
+
+  away_team_id: number;
+  away_team: string;
+  away_team_key: string;
+
+  home_probability: number;
+  draw_probability: number;
+  away_probability: number;
+
+  predicted_result: PredictionResult;
+
+  home_probability_pct: number;
+  draw_probability_pct: number;
+  away_probability_pct: number;
+}
+
+export interface PredictionFilters {
+  roundNumber?: number;
+  teamId?: number;
+}
+
+export interface StandingPrediction {
+  projected_position: number;
+  season: number;
+  team_key: string;
+  team_name: string;
+  simulations: number;
+
+  expected_points: number;
+  average_position: number;
+
+  champion_probability: number;
+  top4_probability: number;
+  top6_probability: number;
+  relegation_probability: number;
+
+  champion_probability_pct: number;
+  top4_probability_pct: number;
+  top6_probability_pct: number;
+  relegation_probability_pct: number;
+}
+
 const API_URL =
   import.meta.env.VITE_API_URL ??
   "http://127.0.0.1:8000";
@@ -230,5 +287,56 @@ export function getMatches(
 
   return request<ChampionshipMatch[]>(
     endpoint,
+  );
+}
+
+
+export function getMatchPredictions(
+  filters: PredictionFilters = {},
+) {
+  const params =
+    new URLSearchParams();
+
+  if (
+    filters.roundNumber
+    !== undefined
+  ) {
+    params.set(
+      "round_number",
+      String(
+        filters.roundNumber,
+      ),
+    );
+  }
+
+  if (
+    filters.teamId
+    !== undefined
+  ) {
+    params.set(
+      "team_id",
+      String(
+        filters.teamId,
+      ),
+    );
+  }
+
+  const query =
+    params.toString();
+
+  const endpoint =
+    query
+      ? `/api/predictions/matches?${query}`
+      : "/api/predictions/matches";
+
+  return request<MatchPrediction[]>(
+    endpoint,
+  );
+}
+
+
+export function getPredictionStandings() {
+  return request<StandingPrediction[]>(
+    "/api/predictions/standings",
   );
 }

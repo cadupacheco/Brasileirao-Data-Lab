@@ -130,7 +130,7 @@ def test_health(
 
     assert response.json() == {
         "status": "ok",
-        "version": "0.5.0",
+        "version": "0.6.0",
     }
 
 
