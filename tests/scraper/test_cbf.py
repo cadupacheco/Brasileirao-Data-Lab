@@ -33,7 +33,23 @@ HTML_FILE = (
 
 
 def load_html() -> str:
-    """Carrega o HTML real salvo durante a coleta."""
+    """
+    Carrega o HTML real salvo durante
+    a coleta.
+
+    Em ambientes limpos de CI o arquivo
+    não existe, pois data/raw não é
+    versionado. Nesse caso, apenas os
+    testes dependentes do snapshot real
+    são ignorados.
+    """
+
+    if not HTML_FILE.exists():
+        pytest.skip(
+            "Snapshot real da CBF não disponível. "
+            "Execute 'python main.py' para gerar "
+            "o arquivo localmente."
+        )
 
     return HTML_FILE.read_text(
         encoding="utf-8"
@@ -216,17 +232,21 @@ def test_parse_completed_match():
     assert match["match_number"] == 6
 
     assert match["home_team_id"] == 62194
+
     assert (
         match["home_team"]
         == "Atlético Mineiro"
     )
+
     assert match["home_goals"] == 2
 
     assert match["away_team_id"] == 20002
+
     assert (
         match["away_team"]
         == "Palmeiras"
     )
+
     assert match["away_goals"] == 2
 
     assert match["date"] == "2026-01-28"
