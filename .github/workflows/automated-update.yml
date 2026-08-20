@@ -40,6 +40,14 @@ jobs:
     # consegue validar corretamente o certificado da CBF.
     runs-on: windows-latest
 
+    # Força o Python a utilizar UTF-8 no runner Windows.
+    #
+    # Sem isso, o stdout pode utilizar uma code page
+    # incompatível com caracteres Unicode como ⚽ e ⚙️.
+    env:
+      PYTHONUTF8: "1"
+      PYTHONIOENCODING: "utf-8"
+
     # Mantemos Bash para que os comandos do workflow
     # sejam iguais em todos os passos.
     defaults:
