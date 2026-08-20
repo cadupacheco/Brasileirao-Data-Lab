@@ -32,7 +32,19 @@ concurrency:
 jobs:
   update:
     name: Check and Update Brasileirão
-    runs-on: ubuntu-latest
+
+    # A CBF apresenta incompatibilidade de validação
+    # da cadeia SSL no runner Linux.
+    #
+    # O scraper utiliza truststore, que no Windows
+    # consegue validar corretamente o certificado da CBF.
+    runs-on: windows-latest
+
+    # Mantemos Bash para que os comandos do workflow
+    # sejam iguais em todos os passos.
+    defaults:
+      run:
+        shell: bash
 
     steps:
 
@@ -87,7 +99,6 @@ jobs:
 
       - name: Detect generated changes
         id: changes
-        shell: bash
         run: |
           if git diff --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
