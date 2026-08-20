@@ -18,7 +18,7 @@
   <a href="https://github.com/cadupacheco/Brasileirao-Data-Lab/actions/workflows/ci.yml">
     <img src="https://github.com/cadupacheco/Brasileirao-Data-Lab/actions/workflows/ci.yml/badge.svg" alt="CI" />
   </a>
-  <img src="https://img.shields.io/badge/version-v0.6.0-27d684" alt="Version v0.6.0" />
+  <img src="https://img.shields.io/badge/version-v0.7.0-27d684" alt="Version v0.7.0" />
 </p>
 
 <p align="center">
@@ -35,7 +35,9 @@ O **Brasileirão Data Lab** é uma plataforma de dados aplicada ao Campeonato Br
 
 O projeto coleta informações da competição, processa e valida os dados, persiste os resultados em banco de dados, disponibiliza uma API REST, apresenta análises em um dashboard web e utiliza Machine Learning para gerar probabilidades de partidas e projeções do campeonato.
 
-A evolução acontece em etapas versionadas, partindo da coleta de dados e avançando por analytics, banco de dados, API, frontend, deploy e modelos preditivos.
+A partir da `v0.7.0`, o projeto também possui atualização automática dos dados. O sistema verifica periodicamente a CBF, detecta alterações reais no campeonato e, quando necessário, reconstrói toda a cadeia de dados, Machine Learning, simulações e publicação.
+
+A evolução acontece em etapas versionadas, partindo da coleta de dados e avançando por analytics, banco de dados, API, frontend, deploy, Machine Learning e automação.
 
 ---
 
@@ -62,73 +64,94 @@ Backend desenvolvido com FastAPI e publicado no Render.
 ## 🏗️ Arquitetura
 
 ```text
-                 CBF
-                  │
-                  ▼
-            Web Scraping
-                  │
-                  ▼
-       Processamento e Validação
-                  │
-          ┌───────┴────────┐
-          ▼                ▼
-       SQLite         Dataset histórico
-          │                │
-          ▼                ▼
-      Analytics       Feature Engineering
-          │                │
-          │                ▼
-          │          Random Forest
-          │                │
-          │        ┌───────┴────────┐
-          │        ▼                ▼
-          │   Prob. por jogo    Monte Carlo
-          │        │                │
-          └────────┴───────┬────────┘
-                           ▼
-                        FastAPI
-                           │
-                           ▼
-                         Render
-                           │
-                           ▼
-                    React + Vite
-                           │
-                           ▼
-                        Vercel
+                         CBF
+                          │
+                          ▼
+                  Verificação periódica
+                    GitHub Actions
+                          │
+                          ▼
+                   Coleta dos dados
+                          │
+                          ▼
+               Detecção de alterações
+                          │
+                  ┌───────┴───────┐
+                  │               │
+             Sem mudança      Com mudança
+                  │               │
+                  ▼               ▼
+              Finaliza       Validação do
+            sem rebuild       novo snapshot
+                                  │
+                                  ▼
+                        Atualização dos dados
+                                  │
+                    ┌─────────────┴─────────────┐
+                    ▼                           ▼
+                 SQLite                  Dataset histórico
+                    │                           │
+                    ▼                           ▼
+                Analytics               Feature Engineering
+                    │                           │
+                    │                           ▼
+                    │                     Random Forest
+                    │                           │
+                    │                  ┌────────┴────────┐
+                    │                  ▼                 ▼
+                    │           Prob. por jogo      Monte Carlo
+                    │                  │                 │
+                    └──────────────────┴────────┬────────┘
+                                               ▼
+                                            FastAPI
+                                               │
+                                               ▼
+                                             Render
+                                               │
+                                               ▼
+                                        React + Vite
+                                               │
+                                               ▼
+                                            Vercel
 ```
 
-O projeto é dividido em quatro grandes camadas:
+O projeto é dividido em cinco grandes camadas.
 
-**Data Layer**
+### Data Layer
 
 Responsável pela coleta, tratamento, validação, analytics e persistência dos dados.
 
-**Machine Learning**
+### Machine Learning
 
 Responsável pelo dataset histórico, feature engineering, Elo, confrontos diretos, treinamento, avaliação, probabilidades de partidas e simulação do campeonato.
 
-**Backend**
+### Backend
 
-API REST construída com FastAPI, responsável por disponibilizar os dados processados e previsões.
+API REST construída com FastAPI, responsável por disponibilizar dados processados, previsões e informações sobre o estado da atualização automática.
 
-**Frontend**
+### Frontend
 
-Dashboard desenvolvido em React + TypeScript para visualização e exploração dos dados e projeções do campeonato.
+Dashboard desenvolvido em React + TypeScript para visualização e exploração dos dados, projeções do campeonato e estado de sincronização dos dados.
+
+### Automação
+
+GitHub Actions executa verificações periódicas na fonte oficial, detecta mudanças e inicia automaticamente a reconstrução dos artefatos quando necessário.
 
 ---
 
 ## 🤖 Machine Learning
 
-A `v0.6.0` adiciona o primeiro motor preditivo do projeto.
+A `v0.6.0` adicionou o primeiro motor preditivo do projeto.
+
+A `v0.7.0` passou a integrar esse motor ao fluxo automático de atualização, permitindo recalcular previsões sempre que novos resultados forem detectados.
 
 ### Dataset histórico
 
-Foram coletadas as temporadas de **2021 a 2026**, totalizando:
+Foram coletadas as temporadas de **2021 a 2026**, totalizando no snapshot de referência:
 
 - 2.280 partidas no histórico;
 - 2.125 partidas disputadas;
-- 155 partidas futuras no snapshot utilizado pela versão.
+- 155 partidas futuras.
 
 ### Feature engineering
 
@@ -160,7 +183,7 @@ A seleção foi feita por backtest temporal com validações em 2023, 2024 e 202
 2. Brier Score;
 3. Accuracy como critério secundário.
 
-O **Random Forest** apresentou o melhor resultado agregado e foi escolhido como modelo principal da versão.
+O **Random Forest** apresentou o melhor resultado agregado e foi escolhido como modelo principal.
 
 ### Calibração
 
@@ -197,6 +220,8 @@ As simulações produzem:
 - probabilidade de G4;
 - probabilidade de Top 6;
 - probabilidade de rebaixamento.
+
+Sempre que uma alteração real nos resultados é detectada, as previsões e simulações podem ser reconstruídas automaticamente pela pipeline da `v0.7.0`.
 
 ---
 
@@ -270,6 +295,18 @@ Painel preditivo com:
 - risco de rebaixamento;
 - visualização dos resultados das 10.000 simulações.
 
+### 📡 Estado dos dados
+
+A `v0.7.0` adiciona um indicador global na interface mostrando:
+
+- data e horário de sincronização;
+- fonte dos dados;
+- estado da automação;
+- quantidade de partidas disputadas;
+- quantidade de partidas futuras.
+
+O horário do snapshot é armazenado em UTC e exibido no dashboard convertido para o horário de Brasília.
+
 ---
 
 ## 🚀 API REST
@@ -278,6 +315,7 @@ Principais endpoints:
 
 ```text
 GET /api/health
+GET /api/status
 GET /api/championship/summary
 GET /api/standings
 GET /api/recent-form
@@ -295,13 +333,209 @@ Os endpoints de previsões permitem acessar:
 /api/predictions/standings
 ```
 
+### Status da atualização
+
+O endpoint:
+
+```text
+GET /api/status
+```
+
+retorna informações públicas sobre o snapshot atualmente publicado.
+
+Exemplo:
+
+```json
+{
+  "season": 2026,
+  "source": "CBF",
+  "status": "up_to_date",
+  "last_sync_at_utc": "2026-08-20T12:45:41Z",
+  "total_matches": 380,
+  "played_matches": 225,
+  "future_matches": 155,
+  "automation_enabled": true,
+  "checks_per_day": 4
+}
+```
+
+Esse endpoint é utilizado pelo frontend para exibir o estado de atualização dos dados.
+
+---
+
+## 🔄 Atualização automática
+
+A `v0.7.0` transforma o Brasileirão Data Lab em uma plataforma capaz de acompanhar automaticamente a evolução do campeonato.
+
+A estratégia adotada é:
+
+> **não agendar jogos, agendar verificações.**
+
+Em vez de depender dos dias em que normalmente existem partidas, a aplicação realiza verificações periódicas na CBF.
+
+Isso também permite detectar:
+
+- jogos adiados;
+- partidas remarcadas;
+- resultados lançados posteriormente;
+- alterações em rodadas anteriores;
+- mudanças de data ou horário;
+- novos resultados publicados pela fonte oficial.
+
+### Frequência
+
+A automação realiza **4 verificações por dia**.
+
+Os horários configurados correspondem aproximadamente a:
+
+```text
+08:00
+14:00
+20:00
+23:59
+```
+
+no horário de Brasília.
+
+### Detecção semântica
+
+O sistema não compara apenas o número da rodada atual.
+
+As partidas são identificadas individualmente e campos relevantes são comparados para detectar mudanças reais.
+
+Entre os dados observados estão:
+
+- ID da partida;
+- rodada;
+- data;
+- horário;
+- mandante;
+- visitante;
+- gols;
+- estádio;
+- cidade;
+- estado;
+- status;
+- resultado.
+
+### Fluxo sem alteração
+
+Quando a CBF não apresenta mudanças:
+
+```text
+CBF
+ │
+ ▼
+Verificação
+ │
+ ▼
+Nenhuma alteração
+ │
+ ├─ não reconstrói features
+ ├─ não recalcula previsões
+ ├─ não executa Monte Carlo
+ ├─ não altera banco
+ └─ não cria commit
+```
+
+Isso evita processamento e histórico Git desnecessários.
+
+### Fluxo com alteração
+
+Quando uma mudança real é identificada:
+
+```text
+CBF
+ │
+ ▼
+Novo snapshot
+ │
+ ▼
+Validação
+ │
+ ▼
+Atualização das partidas
+ │
+ ├─ SQLite
+ ├─ histórico
+ ├─ features
+ ├─ previsões
+ ├─ Monte Carlo
+ └─ metadata
+ │
+ ▼
+Testes automatizados
+ │
+ ▼
+Commit automático
+ │
+ ▼
+Push para main
+ │
+ ▼
+Deploy
+```
+
+### Proteção do último estado válido
+
+O projeto adota validações antes de publicar novos dados.
+
+Snapshots inválidos, incompletos ou inconsistentes interrompem a atualização.
+
+O objetivo é preservar sempre o último estado conhecido como válido.
+
+Entre as validações estão:
+
+- quantidade esperada de partidas;
+- existência das 20 equipes;
+- status válidos;
+- dados essenciais de partidas disputadas;
+- consistência entre partidas realizadas e futuras;
+- geração correta dos artefatos de Machine Learning.
+
+---
+
+## 📝 Metadata da atualização
+
+A `v0.7.0` adiciona:
+
+```text
+data/update_metadata.json
+```
+
+Esse arquivo representa o estado público do snapshot atualmente publicado.
+
+Exemplo:
+
+```json
+{
+  "season": 2026,
+  "source": "CBF",
+  "status": "up_to_date",
+  "last_sync_at_utc": "2026-08-20T12:45:41Z",
+  "total_matches": 380,
+  "played_matches": 225,
+  "future_matches": 155,
+  "automation_enabled": true,
+  "checks_per_day": 4
+}
+```
+
+O campo `last_sync_at_utc` representa o momento em que o snapshot publicado foi sincronizado.
+
+Uma verificação sem alteração não modifica esse horário e não gera um novo commit apenas para atualizar metadata.
+
 ---
 
 ## 🔄 CI/CD
 
 Desde a `v0.5.0`, o projeto utiliza **GitHub Actions** para validar automaticamente alterações enviadas ao repositório.
 
-A pipeline executa dois jobs independentes:
+Na `v0.7.0`, o GitHub Actions também passa a participar diretamente da atualização dos dados.
+
+Existem dois fluxos principais.
+
+### CI de desenvolvimento
 
 ```text
 Push / Pull Request
@@ -323,6 +557,39 @@ Validações atuais:
 - instalação do frontend com `npm ci`;
 - build de produção do React/Vite.
 
+### Atualização automatizada
+
+```text
+Schedule / Manual
+       │
+       ▼
+GitHub Actions
+       │
+       ▼
+Consulta CBF
+       │
+       ▼
+Detecta mudança?
+   │         │
+  não       sim
+   │         │
+   ▼         ▼
+ encerra   rebuild
+             │
+             ▼
+           testes
+             │
+             ▼
+           commit
+             │
+             ▼
+            main
+```
+
+O workflow de atualização utiliza runner Windows para compatibilidade com a cadeia de certificados SSL utilizada pela CBF.
+
+A execução também força UTF-8 para manter os logs e scripts compatíveis com caracteres utilizados pelo projeto.
+
 O backend é publicado no **Render** e o frontend na **Vercel**.
 
 ---
@@ -342,6 +609,7 @@ O backend é publicado no **Render** e o frontend na **Vercel**.
 - BeautifulSoup
 - Requests
 - lxml
+- Truststore
 
 ### Machine Learning
 
@@ -382,6 +650,7 @@ Brasileirao-Data-Lab/
 │
 ├── .github/
 │   └── workflows/
+│       ├── automated-update.yml
 │       └── ci.yml
 │
 ├── data/
@@ -391,27 +660,38 @@ Brasileirao-Data-Lab/
 │   │   ├── matches_history.csv
 │   │   └── season_simulation.csv
 │   ├── processed/
-│   └── raw/
+│   ├── raw/
+│   ├── brasileirao.db
+│   └── update_metadata.json
 │
 ├── frontend/
 │   ├── public/
 │   └── src/
 │       ├── components/
+│       │   └── UpdateStatusIndicator.tsx
 │       ├── pages/
 │       │   └── PredictionsPage.tsx
 │       ├── api.ts
 │       └── App.tsx
 │
 ├── scripts/
+│   ├── build_update_metadata.py
+│   ├── check_updates.py
+│   └── dry_run_v07_update.py
 │
 ├── src/
 │   └── brasileirao_data_lab/
 │       ├── analytics/
 │       ├── api/
+│       │   └── status_router.py
 │       ├── database/
 │       ├── ml/
 │       ├── pipelines/
+│       │   ├── automated_ml_update.py
+│       │   ├── automated_project_update.py
+│       │   └── update_detector.py
 │       ├── scrapers/
+│       ├── update_metadata.py
 │       └── utils/
 │
 ├── tests/
@@ -461,7 +741,19 @@ pip install -e .
 python main.py
 ```
 
-### 5. Inicie a API
+### 5. Verifique atualizações da CBF
+
+```powershell
+python scripts\check_updates.py
+```
+
+### 6. Execute a atualização automatizada localmente
+
+```powershell
+python -m brasileirao_data_lab.pipelines.automated_project_update
+```
+
+### 7. Inicie a API
 
 ```powershell
 uvicorn brasileirao_data_lab.api.app:app --reload --port 8000
@@ -473,7 +765,7 @@ Swagger local:
 http://127.0.0.1:8000/docs
 ```
 
-### 6. Inicie o frontend
+### 8. Inicie o frontend
 
 Em outro terminal:
 
@@ -493,7 +785,7 @@ http://localhost:5173
 
 ## 🧠 Fluxo de Machine Learning
 
-Os scripts principais da `v0.6.0` são:
+Os scripts principais introduzidos na `v0.6.0` são:
 
 ```powershell
 python scripts\collect_cbf_history.py
@@ -516,6 +808,8 @@ data/ml/future_predictions.csv
 data/ml/season_simulation.csv
 ```
 
+Na `v0.7.0`, a reconstrução dos artefatos necessários passa a fazer parte da pipeline automática quando novos dados são detectados.
+
 ---
 
 ## 🧪 Testes
@@ -535,6 +829,8 @@ npm run build
 
 A versão somente é considerada pronta quando os testes Python e o build do frontend passam sem erros.
 
+No fechamento da `v0.7.0`, a suíte possui mais de 200 testes automatizados cobrindo coleta, analytics, banco de dados, API, Machine Learning, pipelines e metadata.
+
 ---
 
 ## 🗺️ Roadmap
@@ -547,22 +843,27 @@ A versão somente é considerada pronta quando os testes Python e o build do fro
 | `v0.4` | FastAPI + React Dashboard | ✅ Concluído |
 | `v0.5` | Deploy + CI/CD | ✅ Concluído |
 | `v0.6` | Machine Learning e previsões | ✅ Concluído |
-| `v0.7` | Atualização automática dos dados | 🔜 Próxima versão |
-| `v1.0` | Plataforma completa | 🎯 Objetivo |
+| `v0.7` | Atualização automática dos dados | ✅ Concluído |
+| `v1.0` | Plataforma completa | 🎯 Próxima etapa |
 
 ---
 
 ## 🔮 Próximas evoluções
 
-A próxima grande etapa será a `v0.7`, focada em automatizar a atualização dos dados e manter as previsões sincronizadas com o andamento do campeonato.
+Com a `v0.7.0` concluída, a próxima grande etapa é a `v1.0`, consolidando o Brasileirão Data Lab como uma plataforma completa.
 
-Entre os próximos objetivos estão:
+Possíveis evoluções:
 
-- atualização automática dos resultados;
-- reconstrução automática das features;
-- regeneração automática das probabilidades;
-- nova execução das simulações após atualização dos dados;
-- atualização automática dos dados servidos pela API e pelo frontend.
+- melhorias de observabilidade da automação;
+- histórico de execuções e atualizações;
+- refinamento dos modelos preditivos;
+- novas métricas e análises;
+- otimizações de desempenho do frontend;
+- code splitting do bundle React;
+- aprimoramento da experiência mobile;
+- novas visualizações de probabilidades;
+- comparação histórica entre temporadas;
+- consolidação da documentação e experiência final do produto.
 
 ---
 
@@ -578,6 +879,7 @@ Além da análise esportiva, o projeto funciona como laboratório para aplicaç�
 - testes automatizados;
 - CI/CD;
 - deploy em nuvem;
+- automação;
 - Machine Learning;
 - avaliação probabilística;
 - simulação Monte Carlo;
