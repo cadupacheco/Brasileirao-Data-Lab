@@ -43,7 +43,7 @@ jobs:
     # Força o Python a utilizar UTF-8 no runner Windows.
     #
     # Sem isso, o stdout pode utilizar uma code page
-    # incompatível com caracteres Unicode como ⚽ e ⚙️.
+    # incompatível com caracteres Unicode.
     env:
       PYTHONUTF8: "1"
       PYTHONIOENCODING: "utf-8"
@@ -93,7 +93,7 @@ jobs:
 
 
       # =======================================================================
-      # Atualização
+      # Atualização principal
       # =======================================================================
 
       - name: Check CBF and update project
@@ -102,7 +102,46 @@ jobs:
 
 
       # =======================================================================
-      # Detecta se realmente houve mudança
+      # Detecta mudanças nos dados principais
+      #
+      # O metadata só deve mudar se algum dado real do campeonato mudou.
+      # Assim uma simples verificação sem novidades NÃO cria commit.
+      # =======================================================================
+
+      - name: Detect core data changes
+        id: core_changes
+        run: |
+          if git diff --quiet -- \
+            data/brasileirao.db \
+            data/processed/matches.csv \
+            data/ml/matches_history.csv \
+            data/ml/features.csv \
+            data/ml/future_predictions.csv \
+            data/ml/season_simulation.csv
+          then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Nenhuma mudanca nos dados principais."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Mudanca real detectada nos dados."
+          fi
+
+
+      # =======================================================================
+      # Metadata
+      #
+      # Só gera um novo timestamp quando uma nova versão
+      # dos dados realmente foi produzida.
+      # =======================================================================
+
+      - name: Build update metadata
+        if: steps.core_changes.outputs.changed == 'true'
+        run: |
+          python scripts/build_update_metadata.py
+
+
+      # =======================================================================
+      # Detecta tudo que será publicado
       # =======================================================================
 
       - name: Detect generated changes
@@ -154,7 +193,8 @@ jobs:
       # =======================================================================
       # Commit
       #
-      # Adicionamos SOMENTE os arquivos de dados que a V0.7 pode atualizar.
+      # Adicionamos SOMENTE os arquivos que a atualização
+      # automática está autorizada a publicar.
       # =======================================================================
 
       - name: Commit updated data
@@ -166,15 +206,14 @@ jobs:
             data/ml/matches_history.csv \
             data/ml/features.csv \
             data/ml/future_predictions.csv \
-            data/ml/season_simulation.csv
+            data/ml/season_simulation.csv \
+            data/update_metadata.json
 
           git commit -m "data: atualiza Brasileirao automaticamente"
 
 
       # =======================================================================
       # Push
-      #
-      # O novo commit em main dispara normalmente CI/deploy.
       # =======================================================================
 
       - name: Push updated data
@@ -192,6 +231,7 @@ jobs:
         run: |
           echo "CBF sem alteracoes."
           echo "Nenhum modelo foi recalculado."
+          echo "Metadata permaneceu inalterado."
           echo "Nenhum commit foi criado."
 
 
@@ -199,6 +239,7 @@ jobs:
         if: steps.changes.outputs.changed == 'true'
         run: |
           echo "Dados atualizados."
+          echo "Metadata atualizado."
           echo "Testes aprovados."
           echo "Commit criado."
           echo "Atualizacao enviada para main."

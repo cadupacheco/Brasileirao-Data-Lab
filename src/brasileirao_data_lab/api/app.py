@@ -34,6 +34,9 @@ from brasileirao_data_lab.api.prediction_service import (
     load_match_predictions,
     load_season_simulation,
 )
+from brasileirao_data_lab.api.status_router import (
+    router as status_router,
+)
 from brasileirao_data_lab.database.analytics_bridge import (
     load_matches_for_analytics,
 )
@@ -229,6 +232,10 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+app.include_router(
+    status_router
 )
 
 
