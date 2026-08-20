@@ -67,6 +67,18 @@ export interface EvolutionPoint {
   performance_pct: number;
 }
 
+export interface UpdateStatus {
+  season: number;
+  source: string;
+  status: string;
+  last_sync_at_utc: string;
+  total_matches: number;
+  played_matches: number;
+  future_matches: number;
+  automation_enabled: boolean;
+  checks_per_day: number;
+}
+
 export type MatchStatus =
   | "all"
   | "played"
@@ -179,6 +191,13 @@ async function request<T>(
   }
 
   return response.json() as Promise<T>;
+}
+
+
+export function getUpdateStatus() {
+  return request<UpdateStatus>(
+    "/api/status",
+  );
 }
 
 

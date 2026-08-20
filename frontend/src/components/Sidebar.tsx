@@ -2,7 +2,6 @@ import {
   BarChart3,
   Bot,
   CalendarDays,
-  Database,
   Goal,
   Home,
   Shield,
@@ -12,6 +11,8 @@ import {
 import {
   NavLink,
 } from "react-router-dom";
+
+import UpdateStatusIndicator from "./UpdateStatusIndicator";
 
 
 interface NavigationItem {
@@ -115,19 +116,7 @@ function Sidebar() {
       </nav>
 
 
-      <div className="sidebar-footer">
-        <Database size={17} />
-
-        <div>
-          <strong>
-            SQLite
-          </strong>
-
-          <span>
-            Fonte principal
-          </span>
-        </div>
-      </div>
+      <UpdateStatusIndicator />
     </aside>
   );
 }

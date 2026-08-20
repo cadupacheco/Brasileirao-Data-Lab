@@ -1,0 +1,116 @@
+.update-status {
+  margin-top: auto;
+  padding: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  border: 1px solid #222c31;
+  border-radius: 12px;
+  background:
+    linear-gradient(
+      145deg,
+      #11191e,
+      #0f161a
+    );
+}
+
+.update-status-icon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+}
+
+.update-status-icon.success {
+  color: #29da88;
+  background:
+    rgba(
+      39,
+      214,
+      134,
+      0.1
+    );
+}
+
+.update-status-icon.loading {
+  color: #8ea098;
+  background: #182126;
+}
+
+.update-status-icon.loading svg {
+  animation:
+    update-status-spin
+    1.2s
+    linear
+    infinite;
+}
+
+.update-status-icon.unavailable {
+  color: #d0a85b;
+  background:
+    rgba(
+      208,
+      168,
+      91,
+      0.1
+    );
+}
+
+.update-status-content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.update-status-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.update-status-content strong {
+  color: #dfe7e3;
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.update-status-content span {
+  color: #7b8982;
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.update-status-content small {
+  color: #56645d;
+  font-size: 8px;
+  line-height: 1.35;
+}
+
+.update-status-live-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: #29da88;
+  box-shadow:
+    0 0 0 3px
+    rgba(
+      41,
+      218,
+      136,
+      0.09
+    );
+}
+
+@keyframes update-status-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
