@@ -219,7 +219,7 @@ app = FastAPI(
         "API REST para acesso aos dados e Analytics "
         "do Campeonato Brasileiro Série A."
     ),
-    version="0.6.0",
+    version="0.7.0",
 )
 
 app.add_middleware(
