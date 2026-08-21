@@ -7,6 +7,7 @@ import {
 
 import Sidebar from "./components/Sidebar";
 
+import ClubDetailsPage from "./pages/ClubDetailsPage";
 import ClubsPage from "./pages/ClubsPage";
 import EvolutionPage from "./pages/EvolutionPage";
 import GamesPage from "./pages/GamesPage";
@@ -43,6 +44,13 @@ function App() {
               path="/clubes"
               element={
                 <ClubsPage />
+              }
+            />
+
+            <Route
+              path="/clubes/:teamId"
+              element={
+                <ClubDetailsPage />
               }
             />
 

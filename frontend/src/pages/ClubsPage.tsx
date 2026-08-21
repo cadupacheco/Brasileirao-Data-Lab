@@ -11,6 +11,10 @@ import {
 } from "react";
 
 import {
+  Link,
+} from "react-router-dom";
+
+import {
   getChampionshipSummary,
   getStandings,
 } from "../api";
@@ -95,7 +99,9 @@ function ClubsPage() {
       <div className="panel">
         <div className="panel-header">
           <div className="panel-icon">
-            <Activity size={19} />
+            <Activity
+              size={19}
+            />
           </div>
 
           <div>
@@ -121,7 +127,9 @@ function ClubsPage() {
       <div className="panel">
         <div className="panel-header">
           <div className="panel-icon">
-            <Activity size={19} />
+            <Activity
+              size={19}
+            />
           </div>
 
           <div>
@@ -154,11 +162,15 @@ function ClubsPage() {
           <p>
             Desempenho dos participantes
             da Série A {summary.season}.
+            Selecione um clube para acessar
+            sua página completa.
           </p>
         </div>
 
         <div className="round-badge">
-          <Shield size={17} />
+          <Shield
+            size={17}
+          />
 
           {standings.length} clubes
         </div>
@@ -171,122 +183,151 @@ function ClubsPage() {
             (
               team,
             ) => (
-              <article
-                className="club-card"
+              <Link
                 key={
                   team.team_id
                 }
+                to={
+                  `/clubes/${team.team_id}`
+                }
+                aria-label={
+                  `Abrir página do ${team.team}`
+                }
+                style={{
+                  color:
+                    "inherit",
+                  textDecoration:
+                    "none",
+                }}
               >
-                <div className="club-card-header">
-                  <div className="club-position">
-                    {
-                      team.position
-                    }º
-                  </div>
-
-                  <div className="club-badge">
-                    <Shield size={21} />
-                  </div>
-                </div>
-
-
-                <div className="club-title">
-                  <h2>
-                    {
-                      team.team
-                    }
-                  </h2>
-
-                  <span>
-                    {
-                      team.points
-                    } pontos
-                  </span>
-                </div>
-
-
-                <div className="club-main-stat">
-                  <strong>
-                    {
-                      team.performance_pct.toFixed(
-                        1,
-                      )
-                    }%
-                  </strong>
-
-                  <span>
-                    aproveitamento
-                  </span>
-                </div>
-
-
-                <div className="club-stats">
-                  <ClubStat
-                    label="Jogos"
-                    value={
-                      team.matches
-                    }
-                  />
-
-                  <ClubStat
-                    label="Vitórias"
-                    value={
-                      team.wins
-                    }
-                  />
-
-                  <ClubStat
-                    label="Empates"
-                    value={
-                      team.draws
-                    }
-                  />
-
-                  <ClubStat
-                    label="Derrotas"
-                    value={
-                      team.losses
-                    }
-                  />
-                </div>
-
-
-                <div className="club-footer">
-                  <div>
-                    <Goal size={15} />
-
-                    <span>
+                <article
+                  className="club-card"
+                  style={{
+                    height:
+                      "100%",
+                    cursor:
+                      "pointer",
+                  }}
+                >
+                  <div className="club-card-header">
+                    <div className="club-position">
                       {
-                        team.goals_for
-                      } GP
-                    </span>
+                        team.position
+                      }º
+                    </div>
+
+                    <div className="club-badge">
+                      <Shield
+                        size={21}
+                      />
+                    </div>
                   </div>
 
-                  <div>
-                    <Shield size={15} />
 
-                    <span>
+                  <div className="club-title">
+                    <h2>
                       {
-                        team.goals_against
-                      } GC
-                    </span>
-                  </div>
-
-                  <div>
-                    <Trophy size={15} />
-
-                    <span>
-                      SG{" "}
-                      {
-                        team.goal_difference
-                        > 0
-                          ? `+${team.goal_difference}`
-                          : team.goal_difference
+                        team.team
                       }
+                    </h2>
+
+                    <span>
+                      {
+                        team.points
+                      } pontos
                     </span>
                   </div>
-                </div>
-              </article>
+
+
+                  <div className="club-main-stat">
+                    <strong>
+                      {
+                        team.performance_pct.toFixed(
+                          1,
+                        )
+                      }%
+                    </strong>
+
+                    <span>
+                      aproveitamento
+                    </span>
+                  </div>
+
+
+                  <div className="club-stats">
+                    <ClubStat
+                      label="Jogos"
+                      value={
+                        team.matches
+                      }
+                    />
+
+                    <ClubStat
+                      label="Vitórias"
+                      value={
+                        team.wins
+                      }
+                    />
+
+                    <ClubStat
+                      label="Empates"
+                      value={
+                        team.draws
+                      }
+                    />
+
+                    <ClubStat
+                      label="Derrotas"
+                      value={
+                        team.losses
+                      }
+                    />
+                  </div>
+
+
+                  <div className="club-footer">
+                    <div>
+                      <Goal
+                        size={15}
+                      />
+
+                      <span>
+                        {
+                          team.goals_for
+                        } GP
+                      </span>
+                    </div>
+
+                    <div>
+                      <Shield
+                        size={15}
+                      />
+
+                      <span>
+                        {
+                          team.goals_against
+                        } GC
+                      </span>
+                    </div>
+
+                    <div>
+                      <Trophy
+                        size={15}
+                      />
+
+                      <span>
+                        SG{" "}
+                        {
+                          team.goal_difference
+                          > 0
+                            ? `+${team.goal_difference}`
+                            : team.goal_difference
+                        }
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              </Link>
             ),
           )
         }
