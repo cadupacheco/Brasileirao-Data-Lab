@@ -28,6 +28,9 @@ from brasileirao_data_lab.analytics.championship import (
 from brasileirao_data_lab.analytics.evolution import (
     get_latest_played_round,
 )
+from brasileirao_data_lab.api.player_router import (
+    router as player_router,
+)
 from brasileirao_data_lab.api.prediction_service import (
     get_match_predictions,
     get_standings_predictions,
@@ -236,6 +239,10 @@ app.add_middleware(
 
 app.include_router(
     status_router
+)
+
+app.include_router(
+    player_router
 )
 
 

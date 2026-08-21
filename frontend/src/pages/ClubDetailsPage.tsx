@@ -4,10 +4,12 @@ import {
   BarChart3,
   CalendarDays,
   Clock3,
+  ExternalLink,
   Goal,
   MapPin,
   Shield,
   Trophy,
+  UserRound,
   Users,
 } from "lucide-react";
 
@@ -23,6 +25,7 @@ import {
 } from "react-router-dom";
 
 import {
+  getClubPlayers,
   getMatches,
   getMatchPredictions,
   getRecentForm,
@@ -31,6 +34,7 @@ import {
 
 import type {
   ChampionshipMatch,
+  ClubPlayer,
   MatchPrediction,
   RecentForm,
   Standing,
@@ -83,6 +87,13 @@ function ClubDetailsPage() {
   );
 
   const [
+    players,
+    setPlayers,
+  ] = useState<ClubPlayer[]>(
+    [],
+  );
+
+  const [
     activeTab,
     setActiveTab,
   ] = useState<ClubTab>(
@@ -103,9 +114,26 @@ function ClubDetailsPage() {
     null,
   );
 
+  const [
+    playersLoading,
+    setPlayersLoading,
+  ] = useState(
+    true,
+  );
+
+  const [
+    playersError,
+    setPlayersError,
+  ] = useState<string | null>(
+    null,
+  );
+
 
   useEffect(
     () => {
+      let cancelled =
+        false;
+
       async function loadClub() {
         if (
           !Number.isInteger(
@@ -113,13 +141,17 @@ function ClubDetailsPage() {
           )
           || parsedTeamId <= 0
         ) {
-          setError(
-            "Clube inválido.",
-          );
+          if (
+            !cancelled
+          ) {
+            setError(
+              "Clube inválido.",
+            );
 
-          setLoading(
-            false,
-          );
+            setLoading(
+              false,
+            );
+          }
 
           return;
         }
@@ -150,6 +182,12 @@ function ClubDetailsPage() {
                 parsedTeamId,
             }),
           ]);
+
+          if (
+            cancelled
+          ) {
+            return;
+          }
 
           const selectedTeam =
             standingsData.find(
@@ -202,17 +240,108 @@ function ClubDetailsPage() {
             requestError,
           );
 
-          setError(
-            "Não foi possível carregar os dados do clube.",
-          );
+          if (
+            !cancelled
+          ) {
+            setError(
+              "Não foi possível carregar os dados do clube.",
+            );
+          }
         } finally {
-          setLoading(
-            false,
-          );
+          if (
+            !cancelled
+          ) {
+            setLoading(
+              false,
+            );
+          }
         }
       }
 
-      loadClub();
+
+      async function loadPlayers() {
+        if (
+          !Number.isInteger(
+            parsedTeamId,
+          )
+          || parsedTeamId <= 0
+        ) {
+          if (
+            !cancelled
+          ) {
+            setPlayers(
+              [],
+            );
+
+            setPlayersLoading(
+              false,
+            );
+          }
+
+          return;
+        }
+
+        try {
+          setPlayersLoading(
+            true,
+          );
+
+          setPlayersError(
+            null,
+          );
+
+          const playersData =
+            await getClubPlayers(
+              parsedTeamId,
+            );
+
+          if (
+            cancelled
+          ) {
+            return;
+          }
+
+          setPlayers(
+            playersData,
+          );
+        } catch (
+          requestError
+        ) {
+          console.error(
+            requestError,
+          );
+
+          if (
+            !cancelled
+          ) {
+            setPlayers(
+              [],
+            );
+
+            setPlayersError(
+              "Não foi possível carregar os jogadores deste clube.",
+            );
+          }
+        } finally {
+          if (
+            !cancelled
+          ) {
+            setPlayersLoading(
+              false,
+            );
+          }
+        }
+      }
+
+
+      void loadClub();
+
+      void loadPlayers();
+
+
+      return () => {
+        cancelled = true;
+      };
     },
     [
       parsedTeamId,
@@ -485,6 +614,15 @@ function ClubDetailsPage() {
                 teamName={
                   team.team
                 }
+                players={
+                  players
+                }
+                loading={
+                  playersLoading
+                }
+                error={
+                  playersError
+                }
               />
             )
           : null
@@ -636,6 +774,12 @@ function OverviewTab({
       5,
     );
 
+  const recentSequence =
+    recentForm?.form.match(
+      /[VED]/gi,
+    )
+    ?? [];
+
   return (
     <>
       <section className="metric-grid">
@@ -744,23 +888,21 @@ function OverviewTab({
                         }}
                       >
                         {
-                          recentForm.form
-                            .split("")
-                            .map(
-                              (
-                                result,
-                                index,
-                              ) => (
-                                <ResultBadge
-                                  key={
-                                    `${result}-${index}`
-                                  }
-                                  result={
-                                    result
-                                  }
-                                />
-                              ),
-                            )
+                          recentSequence.map(
+                            (
+                              result,
+                              index,
+                            ) => (
+                              <ResultBadge
+                                key={
+                                  `${result}-${index}`
+                                }
+                                result={
+                                  result
+                                }
+                              />
+                            ),
+                          )
                         }
                       </div>
 
@@ -1013,85 +1155,676 @@ function MatchesTab({
 
 function PlayersTab({
   teamName,
+  players,
+  loading,
+  error,
 }: {
   teamName: string;
+  players: ClubPlayer[];
+  loading: boolean;
+  error: string | null;
 }) {
-  return (
-    <div className="panel">
-      <div className="panel-header">
-        <div className="panel-icon">
-          <Users
-            size={18}
-          />
+  const topScorer =
+    useMemo(
+      () => {
+        if (
+          players.length
+          === 0
+        ) {
+          return null;
+        }
+
+        return [
+          ...players,
+        ].sort(
+          (
+            first,
+            second,
+          ) => {
+            if (
+              second.goals
+              !== first.goals
+            ) {
+              return (
+                second.goals
+                - first.goals
+              );
+            }
+
+            return (
+              second.matches
+              - first.matches
+            );
+          },
+        )[0];
+      },
+      [
+        players,
+      ],
+    );
+
+  const transferredPlayers =
+    useMemo(
+      () =>
+        players.filter(
+          (
+            player,
+          ) =>
+            !player.is_current_club,
+        ),
+      [
+        players,
+      ],
+    );
+
+  const playersWithAppearances =
+    useMemo(
+      () =>
+        players.filter(
+          (
+            player,
+          ) =>
+            player.matches > 0,
+        ).length,
+      [
+        players,
+      ],
+    );
+
+
+  if (
+    loading
+  ) {
+    return (
+      <div className="panel">
+        <div className="panel-header">
+          <div className="panel-icon">
+            <Users
+              size={18}
+            />
+          </div>
+
+          <div>
+            <h2>
+              Jogadores
+            </h2>
+
+            <p>
+              Carregando elenco de {teamName}
+            </p>
+          </div>
         </div>
 
-        <div>
-          <h2>
-            Jogadores
-          </h2>
-
-          <p>
-            Elenco de {teamName}
-          </p>
+        <div
+          style={{
+            minHeight:
+              "220px",
+            display:
+              "grid",
+            placeItems:
+              "center",
+            color:
+              "#65736c",
+            fontSize:
+              "12px",
+          }}
+        >
+          Consultando jogadores e
+          estatísticas...
         </div>
       </div>
+    );
+  }
+
+
+  if (
+    error
+  ) {
+    return (
+      <div className="panel">
+        <div className="panel-header">
+          <div className="panel-icon">
+            <Users
+              size={18}
+            />
+          </div>
+
+          <div>
+            <h2>
+              Jogadores
+            </h2>
+
+            <p>
+              Elenco de {teamName}
+            </p>
+          </div>
+        </div>
+
+        <div
+          style={{
+            padding:
+              "28px",
+            color:
+              "#ff787d",
+            fontSize:
+              "12px",
+          }}
+        >
+          {error}
+        </div>
+      </div>
+    );
+  }
+
+
+  if (
+    players.length
+    === 0
+  ) {
+    return (
+      <div className="panel">
+        <div className="panel-header">
+          <div className="panel-icon">
+            <Users
+              size={18}
+            />
+          </div>
+
+          <div>
+            <h2>
+              Jogadores
+            </h2>
+
+            <p>
+              Elenco de {teamName}
+            </p>
+          </div>
+        </div>
+
+        <div
+          style={{
+            minHeight:
+              "220px",
+            padding:
+              "34px",
+            display:
+              "grid",
+            placeItems:
+              "center",
+            textAlign:
+              "center",
+          }}
+        >
+          <div>
+            <Users
+              size={38}
+              style={{
+                color:
+                  "#27d684",
+                marginBottom:
+                  "12px",
+              }}
+            />
+
+            <h3
+              style={{
+                margin:
+                  "0 0 8px",
+              }}
+            >
+              Elenco ainda não sincronizado
+            </h3>
+
+            <p
+              style={{
+                maxWidth:
+                  "480px",
+                margin:
+                  "0 auto",
+                color:
+                  "#75827c",
+                fontSize:
+                  "12px",
+                lineHeight:
+                  1.7,
+              }}
+            >
+              Ainda não existem jogadores
+              armazenados para este clube
+              nesta competição.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+
+  return (
+    <>
+      <section className="metric-grid">
+        <MetricCard
+          label="Elenco"
+          value={
+            String(
+              players.length,
+            )
+          }
+          detail="Atletas registrados"
+          icon={
+            <Users
+              size={18}
+            />
+          }
+        />
+
+        <MetricCard
+          label="Utilizados"
+          value={
+            String(
+              playersWithAppearances,
+            )
+          }
+          detail="Jogadores com partidas"
+          icon={
+            <UserRound
+              size={18}
+            />
+          }
+        />
+
+        <MetricCard
+          label="Artilheiro"
+          value={
+            topScorer
+              ? (
+                  topScorer.nickname
+                  ?? topScorer.full_name
+                )
+              : "-"
+          }
+          detail={
+            topScorer
+              ? `${topScorer.goals} gols`
+              : "Sem dados"
+          }
+          icon={
+            <Goal
+              size={18}
+            />
+          }
+        />
+
+        <MetricCard
+          label="Transferidos"
+          value={
+            String(
+              transferredPlayers.length,
+            )
+          }
+          detail="Hoje em outro clube"
+          icon={
+            <Activity
+              size={18}
+            />
+          }
+        />
+      </section>
+
 
       <div
+        className="panel"
         style={{
-          minHeight:
-            "220px",
-          padding:
-            "34px",
-          display:
-            "grid",
-          placeItems:
-            "center",
-          textAlign:
-            "center",
+          marginTop:
+            "18px",
         }}
       >
-        <div>
-          <Users
-            size={38}
-            style={{
-              color:
-                "#27d684",
-              marginBottom:
-                "12px",
-            }}
-          />
+        <div className="panel-header">
+          <div className="panel-icon">
+            <Users
+              size={18}
+            />
+          </div>
 
-          <h3
-            style={{
-              margin:
-                "0 0 8px",
-            }}
-          >
-            Módulo de jogadores
-          </h3>
+          <div>
+            <h2>
+              Jogadores
+            </h2>
 
-          <p
-            style={{
-              maxWidth:
-                "480px",
-              margin:
-                "0 auto",
-              color:
-                "#75827c",
-              fontSize:
-                "12px",
-              lineHeight:
-                1.7,
-            }}
-          >
-            Esta aba será alimentada pelos
-            atletas registrados na CBF e
-            pelas estatísticas individuais
-            da temporada.
-          </p>
+            <p>
+              Estatísticas de {teamName}
+              {" "}
+              na Série A
+            </p>
+          </div>
+        </div>
+
+
+        <div className="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  Jogador
+                </th>
+
+                <th>
+                  Idade
+                </th>
+
+                <th>
+                  J
+                </th>
+
+                <th>
+                  G
+                </th>
+
+                <th>
+                  CA
+                </th>
+
+                <th>
+                  CV
+                </th>
+
+                <th>
+                  Situação
+                </th>
+
+                <th>
+                  CBF
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {
+                players.map(
+                  (
+                    player,
+                  ) => (
+                    <PlayerRow
+                      key={
+                        player.player_id
+                      }
+                      player={
+                        player
+                      }
+                    />
+                  ),
+                )
+              }
+            </tbody>
+          </table>
         </div>
       </div>
-    </div>
+    </>
+  );
+}
+
+
+function PlayerRow({
+  player,
+}: {
+  player: ClubPlayer;
+}) {
+  const displayName =
+    player.nickname
+    ?? player.full_name;
+
+  return (
+    <tr>
+      <td>
+        <div
+          style={{
+            display:
+              "flex",
+            flexDirection:
+              "column",
+            gap:
+              "4px",
+          }}
+        >
+          <strong
+            style={{
+              color:
+                "#e5ece8",
+              fontSize:
+                "12px",
+            }}
+          >
+            {displayName}
+          </strong>
+
+          {
+            player.nickname
+            && player.nickname
+            !== player.full_name
+              ? (
+                  <span
+                    style={{
+                      color:
+                        "#65736c",
+                      fontSize:
+                        "10px",
+                    }}
+                  >
+                    {player.full_name}
+                  </span>
+                )
+              : null
+          }
+        </div>
+      </td>
+
+      <td>
+        {
+          player.age
+          ?? "-"
+        }
+      </td>
+
+      <td>
+        {player.matches}
+      </td>
+
+      <td
+        className={
+          player.goals > 0
+            ? "points"
+            : undefined
+        }
+      >
+        {player.goals}
+      </td>
+
+      <td>
+        <span
+          style={{
+            display:
+              "inline-grid",
+            placeItems:
+              "center",
+            minWidth:
+              "24px",
+            height:
+              "22px",
+            padding:
+              "0 5px",
+            borderRadius:
+              "5px",
+            background:
+              player.yellow_cards
+              > 0
+                ? "rgba(246, 201, 102, 0.13)"
+                : "transparent",
+            color:
+              player.yellow_cards
+              > 0
+                ? "#f6c966"
+                : "#75827c",
+          }}
+        >
+          {
+            player.yellow_cards
+          }
+        </span>
+      </td>
+
+      <td>
+        <span
+          style={{
+            display:
+              "inline-grid",
+            placeItems:
+              "center",
+            minWidth:
+              "24px",
+            height:
+              "22px",
+            padding:
+              "0 5px",
+            borderRadius:
+              "5px",
+            background:
+              player.red_cards
+              > 0
+                ? "rgba(255, 120, 125, 0.13)"
+                : "transparent",
+            color:
+              player.red_cards
+              > 0
+                ? "#ff787d"
+                : "#75827c",
+          }}
+        >
+          {
+            player.red_cards
+          }
+        </span>
+      </td>
+
+      <td>
+        {
+          player.is_current_club
+            ? (
+                <span
+                  style={{
+                    display:
+                      "inline-flex",
+                    alignItems:
+                      "center",
+                    gap:
+                      "5px",
+                    padding:
+                      "5px 8px",
+                    borderRadius:
+                      "999px",
+                    background:
+                      "rgba(39, 214, 134, 0.10)",
+                    color:
+                      "#5cefa7",
+                    fontSize:
+                      "9px",
+                    fontWeight:
+                      700,
+                    whiteSpace:
+                      "nowrap",
+                  }}
+                >
+                  No clube
+                </span>
+              )
+            : (
+                <span
+                  style={{
+                    display:
+                      "inline-flex",
+                    alignItems:
+                      "center",
+                    gap:
+                      "5px",
+                    padding:
+                      "5px 8px",
+                    borderRadius:
+                      "999px",
+                    background:
+                      "rgba(107, 184, 255, 0.10)",
+                    color:
+                      "#6bb8ff",
+                    fontSize:
+                      "9px",
+                    fontWeight:
+                      700,
+                    whiteSpace:
+                      "nowrap",
+                  }}
+                >
+                  Atualmente{" "}
+                  {
+                    player.current_club_name
+                    ?? "em outro clube"
+                  }
+                </span>
+              )
+        }
+      </td>
+
+      <td>
+        {
+          player.profile_url
+            ? (
+                <a
+                  href={
+                    player.profile_url
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={
+                    `Abrir perfil de ${displayName} na CBF`
+                  }
+                  style={{
+                    display:
+                      "inline-flex",
+                    alignItems:
+                      "center",
+                    justifyContent:
+                      "center",
+                    width:
+                      "28px",
+                    height:
+                      "28px",
+                    border:
+                      "1px solid #20282e",
+                    borderRadius:
+                      "7px",
+                    color:
+                      "#829089",
+                    textDecoration:
+                      "none",
+                    background:
+                      "#11181d",
+                  }}
+                >
+                  <ExternalLink
+                    size={13}
+                  />
+                </a>
+              )
+            : (
+                <span
+                  style={{
+                    color:
+                      "#4d5a54",
+                  }}
+                >
+                  -
+                </span>
+              )
+        }
+      </td>
+    </tr>
   );
 }
 

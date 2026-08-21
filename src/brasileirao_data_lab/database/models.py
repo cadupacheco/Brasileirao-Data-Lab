@@ -296,3 +296,198 @@ class StandingsSnapshot(Base):
             f"points={self.points!r}"
             ")"
         )
+
+
+# =============================================================================
+# Jogadores
+# =============================================================================
+
+
+class Player(Base):
+    """
+    Jogador identificado pela CBF.
+
+    player_id é o identificador oficial
+    utilizado nos perfis públicos da CBF.
+
+    O clube atual é armazenado como snapshot
+    informativo e não possui ForeignKey.
+
+    Isso é proposital porque um jogador pode
+    ser transferido para um clube que não faça
+    parte da competição atualmente armazenada.
+    """
+
+    __tablename__ = "players"
+
+    player_id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+        autoincrement=False,
+    )
+
+    full_name: Mapped[str] = mapped_column(
+        String(200),
+        nullable=False,
+        index=True,
+    )
+
+    nickname: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+        index=True,
+    )
+
+    birth_date: Mapped[date | None] = mapped_column(
+        Date,
+        nullable=True,
+    )
+
+    profile_url: Mapped[str | None] = mapped_column(
+        String(500),
+        nullable=True,
+    )
+
+    current_club_id: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+    )
+
+    current_club_name: Mapped[str | None] = mapped_column(
+        String(150),
+        nullable=True,
+    )
+
+    current_club_state: Mapped[str | None] = mapped_column(
+        String(10),
+        nullable=True,
+    )
+
+    current_club_badge_url: Mapped[str | None] = mapped_column(
+        String(500),
+        nullable=True,
+    )
+
+    def __repr__(self) -> str:
+
+        return (
+            "Player("
+            f"player_id={self.player_id!r}, "
+            f"nickname={self.nickname!r}, "
+            f"full_name={self.full_name!r}"
+            ")"
+        )
+
+
+# =============================================================================
+# Jogador por clube e competição
+# =============================================================================
+
+
+class PlayerTeamCompetitionStat(Base):
+    """
+    Estatísticas de um jogador por:
+
+    temporada
+    + competição
+    + clube.
+
+    Essa granularidade é necessária
+    porque um atleta pode defender
+    clubes diferentes durante a mesma
+    edição da competição.
+
+    Exemplo:
+
+    Cacá
+    Série A 2026
+        Corinthians -> estatísticas próprias
+        Vitória      -> estatísticas próprias
+    """
+
+    __tablename__ = (
+        "player_team_competition_stats"
+    )
+
+    season: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+    )
+
+    competition_id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+    )
+
+    player_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "players.player_id"
+        ),
+        primary_key=True,
+    )
+
+    team_id: Mapped[int] = mapped_column(
+        ForeignKey(
+            "teams.team_id"
+        ),
+        primary_key=True,
+    )
+
+    competition_name: Mapped[str] = mapped_column(
+        String(150),
+        nullable=False,
+    )
+
+    category: Mapped[str] = mapped_column(
+        String(100),
+        nullable=False,
+    )
+
+    matches: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
+    goals: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
+    yellow_cards: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
+    red_cards: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
+    __table_args__ = (
+        Index(
+            "ix_player_stats_team",
+            "season",
+            "competition_id",
+            "team_id",
+        ),
+        Index(
+            "ix_player_stats_player",
+            "player_id",
+        ),
+    )
+
+    def __repr__(self) -> str:
+
+        return (
+            "PlayerTeamCompetitionStat("
+            f"season={self.season!r}, "
+            f"competition_id={self.competition_id!r}, "
+            f"player_id={self.player_id!r}, "
+            f"team_id={self.team_id!r}, "
+            f"matches={self.matches!r}"
+            ")"
+        )

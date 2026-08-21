@@ -79,6 +79,43 @@ export interface UpdateStatus {
   checks_per_day: number;
 }
 
+export interface ClubPlayer {
+  season: number;
+
+  competition_id: number;
+  competition_name: string;
+  category: string;
+
+  team_id: number;
+  team: string;
+
+  player_id: number;
+  full_name: string;
+  nickname: string | null;
+
+  birth_date: string | null;
+  age: number | null;
+
+  profile_url: string | null;
+
+  current_club_id: number | null;
+  current_club_name: string | null;
+  current_club_state: string | null;
+  current_club_badge_url: string | null;
+
+  is_current_club: boolean;
+
+  matches: number;
+  goals: number;
+  yellow_cards: number;
+  red_cards: number;
+}
+
+export interface ClubPlayerFilters {
+  season?: number;
+  competitionId?: number;
+}
+
 export type MatchStatus =
   | "all"
   | "played"
@@ -218,6 +255,51 @@ export function getStandings() {
 export function getRecentForm() {
   return request<RecentForm[]>(
     "/api/recent-form?last_n=5",
+  );
+}
+
+
+export function getClubPlayers(
+  teamId: number,
+  filters: ClubPlayerFilters = {},
+) {
+  const params =
+    new URLSearchParams();
+
+  if (
+    filters.season
+    !== undefined
+  ) {
+    params.set(
+      "season",
+      String(
+        filters.season,
+      ),
+    );
+  }
+
+  if (
+    filters.competitionId
+    !== undefined
+  ) {
+    params.set(
+      "competition_id",
+      String(
+        filters.competitionId,
+      ),
+    );
+  }
+
+  const query =
+    params.toString();
+
+  const endpoint =
+    query
+      ? `/api/clubs/${teamId}/players?${query}`
+      : `/api/clubs/${teamId}/players`;
+
+  return request<ClubPlayer[]>(
+    endpoint,
   );
 }
 
