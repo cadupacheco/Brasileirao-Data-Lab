@@ -1,22 +1,105 @@
 import {
+  lazy,
+  Suspense,
+} from "react";
+
+import {
   BrowserRouter,
   Navigate,
   Route,
   Routes,
 } from "react-router-dom";
 
+import {
+  LoaderCircle,
+} from "lucide-react";
+
 import Sidebar from "./components/Sidebar";
 
-import ClubComparisonPage from "./pages/ClubComparisonPage";
-import ClubDetailsPage from "./pages/ClubDetailsPage";
-import ClubsPage from "./pages/ClubsPage";
-import EvolutionPage from "./pages/EvolutionPage";
-import GamesPage from "./pages/GamesPage";
-import OverviewPage from "./pages/OverviewPage";
-import PredictionsPage from "./pages/PredictionsPage";
-import StandingsPage from "./pages/StandingsPage";
-
 import "./App.css";
+
+
+const OverviewPage = lazy(
+  () =>
+    import(
+      "./pages/OverviewPage"
+    ),
+);
+
+const StandingsPage = lazy(
+  () =>
+    import(
+      "./pages/StandingsPage"
+    ),
+);
+
+const ClubsPage = lazy(
+  () =>
+    import(
+      "./pages/ClubsPage"
+    ),
+);
+
+const ClubDetailsPage = lazy(
+  () =>
+    import(
+      "./pages/ClubDetailsPage"
+    ),
+);
+
+const ClubComparisonPage = lazy(
+  () =>
+    import(
+      "./pages/ClubComparisonPage"
+    ),
+);
+
+const EvolutionPage = lazy(
+  () =>
+    import(
+      "./pages/EvolutionPage"
+    ),
+);
+
+const GamesPage = lazy(
+  () =>
+    import(
+      "./pages/GamesPage"
+    ),
+);
+
+const PredictionsPage = lazy(
+  () =>
+    import(
+      "./pages/PredictionsPage"
+    ),
+);
+
+
+function PageLoading() {
+  return (
+    <div className="panel">
+      <div className="panel-header">
+        <div className="panel-icon">
+          <LoaderCircle
+            size={19}
+          />
+        </div>
+
+        <div>
+          <h2>
+            Carregando página...
+          </h2>
+
+          <p>
+            Preparando os dados
+            e componentes necessários.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 
 function App() {
@@ -26,73 +109,79 @@ function App() {
         <Sidebar />
 
         <main className="content">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <OverviewPage />
-              }
-            />
+          <Suspense
+            fallback={
+              <PageLoading />
+            }
+          >
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <OverviewPage />
+                }
+              />
 
-            <Route
-              path="/classificacao"
-              element={
-                <StandingsPage />
-              }
-            />
+              <Route
+                path="/classificacao"
+                element={
+                  <StandingsPage />
+                }
+              />
 
-            <Route
-              path="/clubes"
-              element={
-                <ClubsPage />
-              }
-            />
+              <Route
+                path="/clubes"
+                element={
+                  <ClubsPage />
+                }
+              />
 
-            <Route
-              path="/clubes/:teamId"
-              element={
-                <ClubDetailsPage />
-              }
-            />
+              <Route
+                path="/clubes/:teamId"
+                element={
+                  <ClubDetailsPage />
+                }
+              />
 
-            <Route
-              path="/comparacao"
-              element={
-                <ClubComparisonPage />
-              }
-            />
+              <Route
+                path="/comparacao"
+                element={
+                  <ClubComparisonPage />
+                }
+              />
 
-            <Route
-              path="/evolucao"
-              element={
-                <EvolutionPage />
-              }
-            />
+              <Route
+                path="/evolucao"
+                element={
+                  <EvolutionPage />
+                }
+              />
 
-            <Route
-              path="/jogos"
-              element={
-                <GamesPage />
-              }
-            />
+              <Route
+                path="/jogos"
+                element={
+                  <GamesPage />
+                }
+              />
 
-            <Route
-              path="/previsoes"
-              element={
-                <PredictionsPage />
-              }
-            />
+              <Route
+                path="/previsoes"
+                element={
+                  <PredictionsPage />
+                }
+              />
 
-            <Route
-              path="*"
-              element={
-                <Navigate
-                  to="/"
-                  replace
-                />
-              }
-            />
-          </Routes>
+              <Route
+                path="*"
+                element={
+                  <Navigate
+                    to="/"
+                    replace
+                  />
+                }
+              />
+            </Routes>
+          </Suspense>
         </main>
       </div>
     </BrowserRouter>
