@@ -72,6 +72,8 @@ def test_database_tables_are_created():
 
     assert tables == [
         "matches",
+        "player_team_competition_stats",
+        "players",
         "standings_snapshots",
         "teams",
     ]
