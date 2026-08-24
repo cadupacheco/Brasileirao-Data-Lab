@@ -22,6 +22,8 @@ import type {
   StandingPrediction,
 } from "../api";
 
+import "./PredictionsPage.css";
+
 
 function PredictionsPage() {
   const [
@@ -214,15 +216,7 @@ function PredictionsPage() {
       </header>
 
 
-      <section
-        style={{
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fit, minmax(230px, 1fr))",
-          gap: "14px",
-          marginBottom: "20px",
-        }}
-      >
+      <section className="predictions-title-grid">
         {
           titleContenders.map(
             (
@@ -246,16 +240,8 @@ function PredictionsPage() {
       </section>
 
 
-      <section
-        style={{
-          display: "grid",
-          gridTemplateColumns:
-            "minmax(0, 1.7fr) minmax(280px, 0.8fr)",
-          gap: "18px",
-          alignItems: "start",
-        }}
-      >
-        <div className="panel">
+      <section className="predictions-layout">
+        <div className="panel predictions-table-panel">
           <div className="panel-header">
             <div className="panel-icon">
               <Target size={19} />
@@ -273,18 +259,8 @@ function PredictionsPage() {
             </div>
           </div>
 
-          <div
-            style={{
-              overflowX: "auto",
-            }}
-          >
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                minWidth: "820px",
-              }}
-            >
+          <div className="predictions-table-wrapper">
+            <table className="predictions-table">
               <thead>
                 <tr>
                   <TableHeader>
@@ -331,10 +307,7 @@ function PredictionsPage() {
                         key={
                           team.team_key
                         }
-                        style={{
-                          borderTop:
-                            "1px solid rgba(148, 163, 184, 0.10)",
-                        }}
+                        className="predictions-table-row"
                       >
                         <TableCell>
                           <PositionBadge
@@ -423,12 +396,7 @@ function PredictionsPage() {
         </div>
 
 
-        <div
-          style={{
-            display: "grid",
-            gap: "18px",
-          }}
-        >
+        <div className="predictions-side-column">
           <div className="panel">
             <div className="panel-header">
               <div className="panel-icon">
@@ -447,12 +415,7 @@ function PredictionsPage() {
               </div>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gap: "14px",
-              }}
-            >
+            <div className="predictions-probability-list">
               {
                 titleContenders.map(
                   (
@@ -496,12 +459,7 @@ function PredictionsPage() {
               </div>
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gap: "12px",
-              }}
-            >
+            <div className="predictions-probability-list">
               {
                 relegationRisks.map(
                   (
@@ -530,12 +488,7 @@ function PredictionsPage() {
       </section>
 
 
-      <section
-        className="panel"
-        style={{
-          marginTop: "18px",
-        }}
-      >
+      <section className="panel predictions-interpretation">
         <div className="panel-header">
           <div className="panel-icon">
             <Sparkles size={19} />
