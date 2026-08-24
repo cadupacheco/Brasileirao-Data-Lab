@@ -14,6 +14,7 @@ import {
   LoaderCircle,
 } from "lucide-react";
 
+import RouteErrorBoundary from "./components/RouteErrorBoundary";
 import Sidebar from "./components/Sidebar";
 
 import "./App.css";
@@ -109,79 +110,81 @@ function App() {
         <Sidebar />
 
         <main className="content">
-          <Suspense
-            fallback={
-              <PageLoading />
-            }
-          >
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <OverviewPage />
-                }
-              />
+          <RouteErrorBoundary>
+            <Suspense
+              fallback={
+                <PageLoading />
+              }
+            >
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <OverviewPage />
+                  }
+                />
 
-              <Route
-                path="/classificacao"
-                element={
-                  <StandingsPage />
-                }
-              />
+                <Route
+                  path="/classificacao"
+                  element={
+                    <StandingsPage />
+                  }
+                />
 
-              <Route
-                path="/clubes"
-                element={
-                  <ClubsPage />
-                }
-              />
+                <Route
+                  path="/clubes"
+                  element={
+                    <ClubsPage />
+                  }
+                />
 
-              <Route
-                path="/clubes/:teamId"
-                element={
-                  <ClubDetailsPage />
-                }
-              />
+                <Route
+                  path="/clubes/:teamId"
+                  element={
+                    <ClubDetailsPage />
+                  }
+                />
 
-              <Route
-                path="/comparacao"
-                element={
-                  <ClubComparisonPage />
-                }
-              />
+                <Route
+                  path="/comparacao"
+                  element={
+                    <ClubComparisonPage />
+                  }
+                />
 
-              <Route
-                path="/evolucao"
-                element={
-                  <EvolutionPage />
-                }
-              />
+                <Route
+                  path="/evolucao"
+                  element={
+                    <EvolutionPage />
+                  }
+                />
 
-              <Route
-                path="/jogos"
-                element={
-                  <GamesPage />
-                }
-              />
+                <Route
+                  path="/jogos"
+                  element={
+                    <GamesPage />
+                  }
+                />
 
-              <Route
-                path="/previsoes"
-                element={
-                  <PredictionsPage />
-                }
-              />
+                <Route
+                  path="/previsoes"
+                  element={
+                    <PredictionsPage />
+                  }
+                />
 
-              <Route
-                path="*"
-                element={
-                  <Navigate
-                    to="/"
-                    replace
-                  />
-                }
-              />
-            </Routes>
-          </Suspense>
+                <Route
+                  path="*"
+                  element={
+                    <Navigate
+                      to="/"
+                      replace
+                    />
+                  }
+                />
+              </Routes>
+            </Suspense>
+          </RouteErrorBoundary>
         </main>
       </div>
     </BrowserRouter>
