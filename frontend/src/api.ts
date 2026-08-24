@@ -116,6 +116,106 @@ export interface ClubPlayerFilters {
   competitionId?: number;
 }
 
+
+/*
+ * ============================================================================
+ * Comparação entre clubes
+ * ============================================================================
+ */
+
+export interface ClubComparisonTeam {
+  team_id: number;
+  team: string;
+
+  position: number;
+
+  matches: number;
+  wins: number;
+  draws: number;
+  losses: number;
+
+  points: number;
+
+  goals_for: number;
+  goals_against: number;
+  goal_difference: number;
+
+  performance_pct: number;
+
+  home_matches: number;
+  home_wins: number;
+  home_draws: number;
+  home_losses: number;
+  home_points: number;
+  home_performance_pct: number;
+
+  away_matches: number;
+  away_wins: number;
+  away_draws: number;
+  away_losses: number;
+  away_points: number;
+  away_performance_pct: number;
+
+  recent_matches: number;
+  recent_wins: number;
+  recent_draws: number;
+  recent_losses: number;
+  recent_points: number;
+
+  recent_goals_for: number;
+  recent_goals_against: number;
+  recent_goal_difference: number;
+
+  recent_performance_pct: number;
+  recent_form: string;
+}
+
+export interface HeadToHeadGame {
+  match_id: number | null;
+  round: number | null;
+
+  date: string | null;
+
+  home_team: string;
+  away_team: string;
+
+  home_goals: number;
+  away_goals: number;
+}
+
+export interface HeadToHead {
+  matches: number;
+
+  team_a_wins: number;
+  team_b_wins: number;
+  draws: number;
+
+  team_a_goals: number;
+  team_b_goals: number;
+
+  games: HeadToHeadGame[];
+}
+
+export interface ClubComparison {
+  recent_n: number;
+
+  team_a: ClubComparisonTeam;
+  team_b: ClubComparisonTeam;
+
+  metric_winners: Record<
+    string,
+    number | null
+  >;
+
+  team_a_advantages: number;
+  team_b_advantages: number;
+
+  overall_advantage: number | null;
+
+  head_to_head: HeadToHead;
+}
+
+
 export type MatchStatus =
   | "all"
   | "played"
@@ -209,6 +309,7 @@ export interface StandingPrediction {
   relegation_probability_pct: number;
 }
 
+
 const API_URL =
   import.meta.env.VITE_API_URL ??
   "http://127.0.0.1:8000";
@@ -300,6 +401,47 @@ export function getClubPlayers(
 
   return request<ClubPlayer[]>(
     endpoint,
+  );
+}
+
+
+/*
+ * ============================================================================
+ * Comparação
+ * ============================================================================
+ */
+
+export function getClubComparison(
+  teamA: number,
+  teamB: number,
+  recentN = 5,
+) {
+  const params =
+    new URLSearchParams();
+
+  params.set(
+    "team_a",
+    String(
+      teamA,
+    ),
+  );
+
+  params.set(
+    "team_b",
+    String(
+      teamB,
+    ),
+  );
+
+  params.set(
+    "recent_n",
+    String(
+      recentN,
+    ),
+  );
+
+  return request<ClubComparison>(
+    `/api/clubs/compare?${params.toString()}`,
   );
 }
 

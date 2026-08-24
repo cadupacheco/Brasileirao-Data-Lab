@@ -5,6 +5,7 @@ import {
   Goal,
   Home,
   Shield,
+  Swords,
   Trophy,
 } from "lucide-react";
 
@@ -37,6 +38,11 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
     path: "/clubes",
     label: "Clubes",
     icon: <Shield size={18} />,
+  },
+  {
+    path: "/comparacao",
+    label: "Comparação",
+    icon: <Swords size={18} />,
   },
   {
     path: "/evolucao",

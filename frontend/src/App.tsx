@@ -7,6 +7,7 @@ import {
 
 import Sidebar from "./components/Sidebar";
 
+import ClubComparisonPage from "./pages/ClubComparisonPage";
 import ClubDetailsPage from "./pages/ClubDetailsPage";
 import ClubsPage from "./pages/ClubsPage";
 import EvolutionPage from "./pages/EvolutionPage";
@@ -51,6 +52,13 @@ function App() {
               path="/clubes/:teamId"
               element={
                 <ClubDetailsPage />
+              }
+            />
+
+            <Route
+              path="/comparacao"
+              element={
+                <ClubComparisonPage />
               }
             />
 
