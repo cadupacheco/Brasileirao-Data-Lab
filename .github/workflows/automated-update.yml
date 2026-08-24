@@ -4,7 +4,7 @@ on:
   schedule:
     # Horários em UTC.
     #
-    # Brasilia (UTC-3):
+    # Brasília (UTC-3):
     # 08:00 -> 11:00 UTC
     # 14:00 -> 17:00 UTC
     # 20:00 -> 23:00 UTC
@@ -41,9 +41,6 @@ jobs:
     runs-on: windows-latest
 
     # Força o Python a utilizar UTF-8 no runner Windows.
-    #
-    # Sem isso, o stdout pode utilizar uma code page
-    # incompatível com caracteres Unicode.
     env:
       PYTHONUTF8: "1"
       PYTHONIOENCODING: "utf-8"
@@ -103,9 +100,6 @@ jobs:
 
       # =======================================================================
       # Detecta mudanças nos dados principais
-      #
-      # O metadata só deve mudar se algum dado real do campeonato mudou.
-      # Assim uma simples verificação sem novidades NÃO cria commit.
       # =======================================================================
 
       - name: Detect core data changes
@@ -129,9 +123,6 @@ jobs:
 
       # =======================================================================
       # Metadata
-      #
-      # Só gera um novo timestamp quando uma nova versão
-      # dos dados realmente foi produzida.
       # =======================================================================
 
       - name: Build update metadata
@@ -159,8 +150,6 @@ jobs:
 
       # =======================================================================
       # Testes
-      #
-      # Só executamos a suíte completa quando algum dado mudou.
       # =======================================================================
 
       - name: Run Python tests
@@ -193,14 +182,17 @@ jobs:
       # =======================================================================
       # Commit
       #
-      # Adicionamos SOMENTE os arquivos que a atualização
-      # automática está autorizada a publicar.
+      # Alguns artefatos oficiais são ignorados pelo .gitignore
+      # durante o desenvolvimento local.
+      #
+      # Como este workflow é o publicador oficial desses arquivos,
+      # usamos -f exclusivamente na lista autorizada abaixo.
       # =======================================================================
 
       - name: Commit updated data
         if: steps.changes.outputs.changed == 'true'
         run: |
-          git add \
+          git add -f \
             data/brasileirao.db \
             data/processed/matches.csv \
             data/ml/matches_history.csv \
@@ -208,6 +200,9 @@ jobs:
             data/ml/future_predictions.csv \
             data/ml/season_simulation.csv \
             data/update_metadata.json
+
+          echo "Arquivos preparados para commit:"
+          git status --short
 
           git commit -m "data: atualiza Brasileirao automaticamente"
 
