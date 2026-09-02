@@ -200,7 +200,7 @@
 2026,20,832088,199,GRUPO ÚNICO,2026-07-26,16:00,61377,Bahia,1.0,20001,Corinthians,1.0,Arena Fonte Nova,Salvador,BA,Campeonato Brasileiro
 2026,20,832089,200,GRUPO ÚNICO,2026-07-26,19:30,20022,Remo,2.0,20018,Vitória,0.0,Mangueirão,Belem,PA,Campeonato Brasileiro
 2026,21,832090,201,GRUPO ÚNICO,2026-07-29,21:30,20014,Fluminense,0.0,61377,Bahia,0.0,Maracanã,Rio de Janeiro,RJ,Campeonato Brasileiro
-2026,21,832091,202,GRUPO ÚNICO,,,60175,Botafogo,,20013,Grêmio,,-  -,,,Campeonato Brasileiro
+2026,21,832091,202,GRUPO ÚNICO,2026-09-16,19:30,60175,Botafogo,,20013,Grêmio,,Nilton Santos,Rio de Janeiro,RJ,Campeonato Brasileiro
 2026,21,832092,203,GRUPO ÚNICO,,,20005,São Paulo,,20008,Santos FC,,-  -,,,Campeonato Brasileiro
 2026,21,832093,204,GRUPO ÚNICO,2026-07-30,19:30,20001,Corinthians,0.0,20052,Athletico Paranaense,0.0,Neo Química Arena,Sao Paulo,SP,Campeonato Brasileiro
 2026,21,832094,205,GRUPO ÚNICO,2026-07-29,19:30,20385,Mirassol,2.0,20022,Remo,1.0,José Maria de Campos Maia,Mirassol,SP,Campeonato Brasileiro
@@ -259,16 +259,16 @@
 2026,26,832147,258,GRUPO ÚNICO,2026-09-06,11:00,61590,Coritiba SAF,,20385,Mirassol,,Couto Pereira,Curitiba,PR,Campeonato Brasileiro
 2026,26,832148,259,GRUPO ÚNICO,2026-09-07,20:00,20018,Vitória,,20013,Grêmio,,Manoel Barradas,Salvador,BA,Campeonato Brasileiro
 2026,26,832149,260,GRUPO ÚNICO,2026-09-06,16:00,20022,Remo,,20016,Flamengo,,Mangueirão,Belem,PA,Campeonato Brasileiro
-2026,27,832151,261,GRUPO ÚNICO,,,20016,Flamengo,,20001,Corinthians,,-  -,,,Campeonato Brasileiro
-2026,27,832152,262,GRUPO ÚNICO,,,60175,Botafogo,,20007,Red Bull Bragantino,,-  -,,,Campeonato Brasileiro
-2026,27,832153,263,GRUPO ÚNICO,,,20008,Santos FC,,59849,Cruzeiro,,-  -,,,Campeonato Brasileiro
-2026,27,832154,264,GRUPO ÚNICO,,,20002,Palmeiras,,20005,São Paulo,,-  -,,,Campeonato Brasileiro
-2026,27,832155,265,GRUPO ÚNICO,,,20385,Mirassol,,20018,Vitória,,-  -,,,Campeonato Brasileiro
-2026,27,832156,266,GRUPO ÚNICO,,,62194,Atlético Mineiro,,20014,Fluminense,,-  -,,,Campeonato Brasileiro
-2026,27,832157,267,GRUPO ÚNICO,,,20013,Grêmio,,60646,Vasco da Gama Saf,,-  -,,,Campeonato Brasileiro
-2026,27,832158,268,GRUPO ÚNICO,,,61590,Coritiba SAF,,20052,Athletico Paranaense,,-  -,,,Campeonato Brasileiro
-2026,27,832159,269,GRUPO ÚNICO,,,61377,Bahia,,20022,Remo,,-  -,,,Campeonato Brasileiro
-2026,27,832160,270,GRUPO ÚNICO,,,20086,Chapecoense,,20011,Internacional,,-  -,,,Campeonato Brasileiro
+2026,27,832151,261,GRUPO ÚNICO,2026-09-13,17:30,20016,Flamengo,,20001,Corinthians,,Maracanã,Rio de Janeiro,RJ,Campeonato Brasileiro
+2026,27,832152,262,GRUPO ÚNICO,2026-09-12,20:30,60175,Botafogo,,20007,Red Bull Bragantino,,Nilton Santos,Rio de Janeiro,RJ,Campeonato Brasileiro
+2026,27,832153,263,GRUPO ÚNICO,2026-09-12,21:00,20008,Santos FC,,59849,Cruzeiro,,Vila Belmiro,Santos,SP,Campeonato Brasileiro
+2026,27,832154,264,GRUPO ÚNICO,2026-09-12,18:30,20002,Palmeiras,,20005,São Paulo,,Nubank Parque,Sao Paulo,SP,Campeonato Brasileiro
+2026,27,832155,265,GRUPO ÚNICO,2026-09-13,16:00,20385,Mirassol,,20018,Vitória,,José Maria de Campos Maia,Mirassol,SP,Campeonato Brasileiro
+2026,27,832156,266,GRUPO ÚNICO,2026-09-12,16:00,62194,Atlético Mineiro,,20014,Fluminense,,ARENA MRV,Belo Horizonte,MG,Campeonato Brasileiro
+2026,27,832157,267,GRUPO ÚNICO,2026-09-12,16:00,20013,Grêmio,,60646,Vasco da Gama Saf,,Arena do Grêmio,Porto Alegre,RS,Campeonato Brasileiro
+2026,27,832158,268,GRUPO ÚNICO,2026-09-11,21:00,61590,Coritiba SAF,,20052,Athletico Paranaense,,Couto Pereira,Curitiba,PR,Campeonato Brasileiro
+2026,27,832159,269,GRUPO ÚNICO,2026-09-14,20:00,61377,Bahia,,20022,Remo,,Arena Fonte Nova,Salvador,BA,Campeonato Brasileiro
+2026,27,832160,270,GRUPO ÚNICO,2026-09-12,17:00,20086,Chapecoense,,20011,Internacional,,Arena Condá,Chapeco,SC,Campeonato Brasileiro
 2026,28,832161,271,GRUPO ÚNICO,,,20016,Flamengo,,20007,Red Bull Bragantino,,-  -,,,Campeonato Brasileiro
 2026,28,832162,272,GRUPO ÚNICO,,,60646,Vasco da Gama Saf,,61590,Coritiba SAF,,-  -,,,Campeonato Brasileiro
 2026,28,832163,273,GRUPO ÚNICO,,,20005,São Paulo,,20011,Internacional,,-  -,,,Campeonato Brasileiro
