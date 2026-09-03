@@ -29,7 +29,7 @@
 2026,3,831916,28,GRUPO ÚNICO,2026-02-12,19:00,20052,Athletico Paranaense,2.0,20008,Santos FC,1.0,Arena da Baixada,Curitiba,PR,Campeonato Brasileiro
 2026,3,831917,29,GRUPO ÚNICO,2026-02-10,21:30,20018,Vitória,1.0,20016,Flamengo,2.0,Manoel Barradas,Salvador,BA,Campeonato Brasileiro
 2026,3,831918,30,GRUPO ÚNICO,2026-02-11,19:00,20086,Chapecoense,3.0,61590,Coritiba SAF,3.0,Arena Condá,Chapeco,SC,Campeonato Brasileiro
-2026,4,831919,31,GRUPO ÚNICO,2026-09-02,19:30,20016,Flamengo,,20385,Mirassol,,Maracanã,Rio de Janeiro,RJ,Campeonato Brasileiro
+2026,4,831919,31,GRUPO ÚNICO,2026-09-02,19:30,20016,Flamengo,2.0,20385,Mirassol,0.0,Maracanã,Rio de Janeiro,RJ,Campeonato Brasileiro
 2026,4,831920,32,GRUPO ÚNICO,2026-07-23,19:30,60175,Botafogo,0.0,20018,Vitória,0.0,Nilton Santos,Rio de Janeiro,RJ,Campeonato Brasileiro
 2026,4,831921,33,GRUPO ÚNICO,2026-02-26,19:00,20008,Santos FC,2.0,60646,Vasco da Gama Saf,1.0,Vila Belmiro,Santos,SP,Campeonato Brasileiro
 2026,4,831922,34,GRUPO ÚNICO,2026-02-25,21:30,20002,Palmeiras,2.0,20014,Fluminense,1.0,Arena Barueri,Barueri,SP,Campeonato Brasileiro
@@ -269,36 +269,36 @@
 2026,27,832158,268,GRUPO ÚNICO,2026-09-11,21:00,61590,Coritiba SAF,,20052,Athletico Paranaense,,Couto Pereira,Curitiba,PR,Campeonato Brasileiro
 2026,27,832159,269,GRUPO ÚNICO,2026-09-14,20:00,61377,Bahia,,20022,Remo,,Arena Fonte Nova,Salvador,BA,Campeonato Brasileiro
 2026,27,832160,270,GRUPO ÚNICO,2026-09-12,17:00,20086,Chapecoense,,20011,Internacional,,Arena Condá,Chapeco,SC,Campeonato Brasileiro
-2026,28,832161,271,GRUPO ÚNICO,,,20016,Flamengo,,20007,Red Bull Bragantino,,-  -,,,Campeonato Brasileiro
-2026,28,832162,272,GRUPO ÚNICO,,,60646,Vasco da Gama Saf,,61590,Coritiba SAF,,-  -,,,Campeonato Brasileiro
-2026,28,832163,273,GRUPO ÚNICO,,,20005,São Paulo,,20011,Internacional,,-  -,,,Campeonato Brasileiro
-2026,28,832164,274,GRUPO ÚNICO,,,20001,Corinthians,,20014,Fluminense,,-  -,,,Campeonato Brasileiro
-2026,28,832165,275,GRUPO ÚNICO,,,20385,Mirassol,,60175,Botafogo,,-  -,,,Campeonato Brasileiro
-2026,28,832166,276,GRUPO ÚNICO,,,62194,Atlético Mineiro,,20086,Chapecoense,,-  -,,,Campeonato Brasileiro
-2026,28,832167,277,GRUPO ÚNICO,,,20013,Grêmio,,20002,Palmeiras,,-  -,,,Campeonato Brasileiro
-2026,28,832168,278,GRUPO ÚNICO,,,20052,Athletico Paranaense,,61377,Bahia,,-  -,,,Campeonato Brasileiro
-2026,28,832169,279,GRUPO ÚNICO,,,20018,Vitória,,59849,Cruzeiro,,-  -,,,Campeonato Brasileiro
-2026,28,832170,280,GRUPO ÚNICO,,,20022,Remo,,20008,Santos FC,,-  -,,,Campeonato Brasileiro
-2026,29,832171,281,GRUPO ÚNICO,,,20014,Fluminense,,61590,Coritiba SAF,,-  -,,,Campeonato Brasileiro
-2026,29,832172,282,GRUPO ÚNICO,,,60175,Botafogo,,60646,Vasco da Gama Saf,,-  -,,,Campeonato Brasileiro
-2026,29,832173,283,GRUPO ÚNICO,,,20008,Santos FC,,20016,Flamengo,,-  -,,,Campeonato Brasileiro
-2026,29,832174,284,GRUPO ÚNICO,,,20002,Palmeiras,,61377,Bahia,,-  -,,,Campeonato Brasileiro
-2026,29,832175,285,GRUPO ÚNICO,,,20007,Red Bull Bragantino,,20385,Mirassol,,-  -,,,Campeonato Brasileiro
-2026,29,832176,286,GRUPO ÚNICO,,,59849,Cruzeiro,,20005,São Paulo,,-  -,,,Campeonato Brasileiro
-2026,29,832177,287,GRUPO ÚNICO,,,20011,Internacional,,20001,Corinthians,,-  -,,,Campeonato Brasileiro
-2026,29,832178,288,GRUPO ÚNICO,,,20052,Athletico Paranaense,,62194,Atlético Mineiro,,-  -,,,Campeonato Brasileiro
-2026,29,832179,289,GRUPO ÚNICO,,,20018,Vitória,,20086,Chapecoense,,-  -,,,Campeonato Brasileiro
-2026,29,832180,290,GRUPO ÚNICO,,,20022,Remo,,20013,Grêmio,,-  -,,,Campeonato Brasileiro
-2026,30,832181,291,GRUPO ÚNICO,,,20016,Flamengo,,20014,Fluminense,,-  -,,,Campeonato Brasileiro
-2026,30,832182,292,GRUPO ÚNICO,,,60646,Vasco da Gama Saf,,20022,Remo,,-  -,,,Campeonato Brasileiro
-2026,30,832183,293,GRUPO ÚNICO,,,20005,São Paulo,,20018,Vitória,,-  -,,,Campeonato Brasileiro
-2026,30,832184,294,GRUPO ÚNICO,,,20002,Palmeiras,,20001,Corinthians,,-  -,,,Campeonato Brasileiro
-2026,30,832185,295,GRUPO ÚNICO,,,20007,Red Bull Bragantino,,59849,Cruzeiro,,-  -,,,Campeonato Brasileiro
-2026,30,832186,296,GRUPO ÚNICO,,,62194,Atlético Mineiro,,20008,Santos FC,,-  -,,,Campeonato Brasileiro
-2026,30,832187,297,GRUPO ÚNICO,,,20013,Grêmio,,20011,Internacional,,-  -,,,Campeonato Brasileiro
-2026,30,832188,298,GRUPO ÚNICO,,,61590,Coritiba SAF,,60175,Botafogo,,-  -,,,Campeonato Brasileiro
-2026,30,832189,299,GRUPO ÚNICO,,,61377,Bahia,,20385,Mirassol,,-  -,,,Campeonato Brasileiro
-2026,30,832190,300,GRUPO ÚNICO,,,20086,Chapecoense,,20052,Athletico Paranaense,,-  -,,,Campeonato Brasileiro
+2026,28,832161,271,GRUPO ÚNICO,2026-09-20,18:30,20016,Flamengo,,20007,Red Bull Bragantino,,Maracanã,Rio de Janeiro,RJ,Campeonato Brasileiro
+2026,28,832162,272,GRUPO ÚNICO,2026-09-19,20:30,60646,Vasco da Gama Saf,,61590,Coritiba SAF,,São Januário,Rio de Janeiro,RJ,Campeonato Brasileiro
+2026,28,832163,273,GRUPO ÚNICO,2026-09-19,21:00,20005,São Paulo,,20011,Internacional,,Morumbi,Sao Paulo,SP,Campeonato Brasileiro
+2026,28,832164,274,GRUPO ÚNICO,2026-09-20,16:00,20001,Corinthians,,20014,Fluminense,,Neo Química Arena,Sao Paulo,SP,Campeonato Brasileiro
+2026,28,832165,275,GRUPO ÚNICO,2026-09-19,17:00,20385,Mirassol,,60175,Botafogo,,José Maria de Campos Maia,Mirassol,SP,Campeonato Brasileiro
+2026,28,832166,276,GRUPO ÚNICO,2026-09-19,16:00,62194,Atlético Mineiro,,20086,Chapecoense,,ARENA MRV,Belo Horizonte,MG,Campeonato Brasileiro
+2026,28,832167,277,GRUPO ÚNICO,2026-09-20,11:00,20013,Grêmio,,20002,Palmeiras,,Arena do Grêmio,Porto Alegre,RS,Campeonato Brasileiro
+2026,28,832168,278,GRUPO ÚNICO,2026-09-20,19:30,20052,Athletico Paranaense,,61377,Bahia,,Arena da Baixada,Curitiba,PR,Campeonato Brasileiro
+2026,28,832169,279,GRUPO ÚNICO,2026-09-20,16:00,20018,Vitória,,59849,Cruzeiro,,Manoel Barradas,Salvador,BA,Campeonato Brasileiro
+2026,28,832170,280,GRUPO ÚNICO,2026-09-19,18:30,20022,Remo,,20008,Santos FC,,Mangueirão,Belem,PA,Campeonato Brasileiro
+2026,29,832171,281,GRUPO ÚNICO,2026-10-08,21:30,20014,Fluminense,,61590,Coritiba SAF,,Maracanã,Rio de Janeiro,RJ,Campeonato Brasileiro
+2026,29,832172,282,GRUPO ÚNICO,2026-10-07,20:30,60175,Botafogo,,60646,Vasco da Gama Saf,,Nilton Santos,Rio de Janeiro,RJ,Campeonato Brasileiro
+2026,29,832173,283,GRUPO ÚNICO,2026-10-08,19:30,20008,Santos FC,,20016,Flamengo,,Vila Belmiro,Santos,SP,Campeonato Brasileiro
+2026,29,832174,284,GRUPO ÚNICO,2026-10-08,21:30,20002,Palmeiras,,61377,Bahia,,Nubank Parque,Sao Paulo,SP,Campeonato Brasileiro
+2026,29,832175,285,GRUPO ÚNICO,2026-10-07,19:30,20007,Red Bull Bragantino,,20385,Mirassol,,Cícero de Souza Marques,Braganca Paulista,SP,Campeonato Brasileiro
+2026,29,832176,286,GRUPO ÚNICO,2026-10-07,21:30,59849,Cruzeiro,,20005,São Paulo,,Mineirão,Belo Horizonte,MG,Campeonato Brasileiro
+2026,29,832177,287,GRUPO ÚNICO,2026-10-07,19:30,20011,Internacional,,20001,Corinthians,,Beira-Rio,Porto Alegre,RS,Campeonato Brasileiro
+2026,29,832178,288,GRUPO ÚNICO,2026-10-08,20:00,20052,Athletico Paranaense,,62194,Atlético Mineiro,,Arena da Baixada,Curitiba,PR,Campeonato Brasileiro
+2026,29,832179,289,GRUPO ÚNICO,2026-10-07,20:00,20018,Vitória,,20086,Chapecoense,,Manoel Barradas,Salvador,BA,Campeonato Brasileiro
+2026,29,832180,290,GRUPO ÚNICO,2026-10-07,19:30,20022,Remo,,20013,Grêmio,,Mangueirão,Belem,PA,Campeonato Brasileiro
+2026,30,832181,291,GRUPO ÚNICO,2026-10-11,17:30,20016,Flamengo,,20014,Fluminense,,Maracanã,Rio de Janeiro,RJ,Campeonato Brasileiro
+2026,30,832182,292,GRUPO ÚNICO,2026-10-10,17:00,60646,Vasco da Gama Saf,,20022,Remo,,São Januário,Rio de Janeiro,RJ,Campeonato Brasileiro
+2026,30,832183,293,GRUPO ÚNICO,2026-10-10,21:00,20005,São Paulo,,20018,Vitória,,Morumbi,Sao Paulo,SP,Campeonato Brasileiro
+2026,30,832184,294,GRUPO ÚNICO,2026-10-11,17:30,20002,Palmeiras,,20001,Corinthians,,Nubank Parque,Sao Paulo,SP,Campeonato Brasileiro
+2026,30,832185,295,GRUPO ÚNICO,2026-10-12,21:00,20007,Red Bull Bragantino,,59849,Cruzeiro,,Cícero de Souza Marques,Braganca Paulista,SP,Campeonato Brasileiro
+2026,30,832186,296,GRUPO ÚNICO,2026-10-11,16:00,62194,Atlético Mineiro,,20008,Santos FC,,ARENA MRV,Belo Horizonte,MG,Campeonato Brasileiro
+2026,30,832187,297,GRUPO ÚNICO,2026-10-11,17:30,20013,Grêmio,,20011,Internacional,,Arena do Grêmio,Porto Alegre,RS,Campeonato Brasileiro
+2026,30,832188,298,GRUPO ÚNICO,2026-10-11,19:30,61590,Coritiba SAF,,60175,Botafogo,,Couto Pereira,Curitiba,PR,Campeonato Brasileiro
+2026,30,832189,299,GRUPO ÚNICO,2026-10-11,19:30,61377,Bahia,,20385,Mirassol,,Arena Fonte Nova,Salvador,BA,Campeonato Brasileiro
+2026,30,832190,300,GRUPO ÚNICO,2026-10-12,19:30,20086,Chapecoense,,20052,Athletico Paranaense,,Arena Condá,Chapeco,SC,Campeonato Brasileiro
 2026,31,832191,301,GRUPO ÚNICO,,,20014,Fluminense,,20008,Santos FC,,-  -,,,Campeonato Brasileiro
 2026,31,832192,302,GRUPO ÚNICO,,,60175,Botafogo,,20086,Chapecoense,,-  -,,,Campeonato Brasileiro
 2026,31,832193,303,GRUPO ÚNICO,,,20005,São Paulo,,60646,Vasco da Gama Saf,,-  -,,,Campeonato Brasileiro
