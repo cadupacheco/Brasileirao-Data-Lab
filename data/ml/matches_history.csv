@@ -2173,12 +2173,12 @@
 2026,1260611,28,832162,272,GRUPO ÚNICO,2026-09-19,20:30,60646,Vasco da Gama Saf,,61590,Coritiba SAF,,São Januário,Rio de Janeiro,RJ,Campeonato Brasileiro,upcoming,
 2026,1260611,28,832163,273,GRUPO ÚNICO,2026-09-19,21:00,20005,São Paulo,,20011,Internacional,,Morumbi,Sao Paulo,SP,Campeonato Brasileiro,upcoming,
 2026,1260611,28,832164,274,GRUPO ÚNICO,2026-09-20,16:00,20001,Corinthians,,20014,Fluminense,,Neo Química Arena,Sao Paulo,SP,Campeonato Brasileiro,upcoming,
-2026,1260611,28,832165,275,GRUPO ÚNICO,2026-09-19,17:00,20385,Mirassol,,60175,Botafogo,,José Maria de Campos Maia,Mirassol,SP,Campeonato Brasileiro,upcoming,
-2026,1260611,28,832166,276,GRUPO ÚNICO,2026-09-19,16:00,62194,Atlético Mineiro,,20086,Chapecoense,,ARENA MRV,Belo Horizonte,MG,Campeonato Brasileiro,upcoming,
+2026,1260611,28,832165,275,GRUPO ÚNICO,2026-09-19,17:00,20385,Mirassol,2.0,60175,Botafogo,0.0,José Maria de Campos Maia,Mirassol,SP,Campeonato Brasileiro,played,HOME
+2026,1260611,28,832166,276,GRUPO ÚNICO,2026-09-19,16:00,62194,Atlético Mineiro,1.0,20086,Chapecoense,1.0,ARENA MRV,Belo Horizonte,MG,Campeonato Brasileiro,played,DRAW
 2026,1260611,28,832167,277,GRUPO ÚNICO,2026-09-20,11:00,20013,Grêmio,,20002,Palmeiras,,Arena do Grêmio,Porto Alegre,RS,Campeonato Brasileiro,upcoming,
 2026,1260611,28,832168,278,GRUPO ÚNICO,2026-09-20,19:30,20052,Athletico Paranaense,,61377,Bahia,,Arena da Baixada,Curitiba,PR,Campeonato Brasileiro,upcoming,
 2026,1260611,28,832169,279,GRUPO ÚNICO,2026-09-20,16:00,20018,Vitória,,59849,Cruzeiro,,Manoel Barradas,Salvador,BA,Campeonato Brasileiro,upcoming,
-2026,1260611,28,832170,280,GRUPO ÚNICO,2026-09-19,18:30,20022,Remo,,20008,Santos FC,,Mangueirão,Belem,PA,Campeonato Brasileiro,upcoming,
+2026,1260611,28,832170,280,GRUPO ÚNICO,2026-09-19,18:30,20022,Remo,1.0,20008,Santos FC,2.0,Mangueirão,Belem,PA,Campeonato Brasileiro,played,AWAY
 2026,1260611,29,832171,281,GRUPO ÚNICO,2026-10-08,21:30,20014,Fluminense,,61590,Coritiba SAF,,Maracanã,Rio de Janeiro,RJ,Campeonato Brasileiro,upcoming,
 2026,1260611,29,832172,282,GRUPO ÚNICO,2026-10-07,20:30,60175,Botafogo,,60646,Vasco da Gama Saf,,Nilton Santos,Rio de Janeiro,RJ,Campeonato Brasileiro,upcoming,
 2026,1260611,29,832173,283,GRUPO ÚNICO,2026-10-08,19:30,20008,Santos FC,,20016,Flamengo,,Vila Belmiro,Santos,SP,Campeonato Brasileiro,upcoming,
