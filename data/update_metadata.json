@@ -2,10 +2,10 @@
   "season": 2026,
   "source": "CBF",
   "status": "up_to_date",
-  "last_sync_at_utc": "2026-11-06T03:00:01Z",
+  "last_sync_at_utc": "2026-11-07T02:29:00Z",
   "total_matches": 380,
-  "played_matches": 338,
-  "future_matches": 42,
+  "played_matches": 339,
+  "future_matches": 41,
   "automation_enabled": true,
   "checks_per_day": 4
 }
