@@ -2108,7 +2108,7 @@
 2026,1260611,21,832096,207,GRUPO ÚNICO,2026-07-29,19:30,20011,Internacional,1.0,20016,Flamengo,1.0,Beira-Rio,Porto Alegre,RS,Campeonato Brasileiro,played,DRAW
 2026,1260611,21,832097,208,GRUPO ÚNICO,2026-07-30,21:30,61590,Coritiba SAF,0.0,59849,Cruzeiro,1.0,Couto Pereira,Curitiba,PR,Campeonato Brasileiro,played,AWAY
 2026,1260611,21,832098,209,GRUPO ÚNICO,2026-07-29,21:30,20018,Vitória,0.0,20002,Palmeiras,4.0,Manoel Barradas,Salvador,BA,Campeonato Brasileiro,played,AWAY
-2026,1260611,21,832099,210,GRUPO ÚNICO,2026-11-14,20:30,20086,Chapecoense,,60646,Vasco da Gama Saf,,Arena Condá,Chapeco,SC,Campeonato Brasileiro,upcoming,
+2026,1260611,21,832099,210,GRUPO ÚNICO,2026-11-14,20:30,20086,Chapecoense,0.0,60646,Vasco da Gama Saf,2.0,Arena Condá,Chapeco,SC,Campeonato Brasileiro,played,AWAY
 2026,1260611,22,832100,211,GRUPO ÚNICO,2026-08-09,19:30,20016,Flamengo,2.0,20018,Vitória,0.0,Maracanã,Rio de Janeiro,RJ,Campeonato Brasileiro,played,HOME
 2026,1260611,22,832101,212,GRUPO ÚNICO,2026-08-08,21:00,60175,Botafogo,1.0,20014,Fluminense,1.0,Nilton Santos,Rio de Janeiro,RJ,Campeonato Brasileiro,played,DRAW
 2026,1260611,22,832102,213,GRUPO ÚNICO,2026-08-09,18:30,20008,Santos FC,0.0,20052,Athletico Paranaense,2.0,Vila Belmiro,Santos,SP,Campeonato Brasileiro,played,AWAY
@@ -2243,7 +2243,7 @@
 2026,1260611,35,832232,342,GRUPO ÚNICO,2026-11-19,19:30,60646,Vasco da Gama Saf,,20011,Internacional,,São Januário,Rio de Janeiro,RJ,Campeonato Brasileiro,upcoming,
 2026,1260611,35,832233,343,GRUPO ÚNICO,2026-11-19,21:30,20005,São Paulo,,20014,Fluminense,,Morumbi,Sao Paulo,SP,Campeonato Brasileiro,upcoming,
 2026,1260611,35,832234,344,GRUPO ÚNICO,2026-11-18,21:30,20001,Corinthians,,60175,Botafogo,,Neo Química Arena,Sao Paulo,SP,Campeonato Brasileiro,upcoming,
-2026,1260611,35,832235,345,GRUPO ÚNICO,2026-11-14,18:30,20385,Mirassol,,62194,Atlético Mineiro,,José Maria de Campos Maia,Mirassol,SP,Campeonato Brasileiro,upcoming,
+2026,1260611,35,832235,345,GRUPO ÚNICO,2026-11-14,18:30,20385,Mirassol,0.0,62194,Atlético Mineiro,0.0,José Maria de Campos Maia,Mirassol,SP,Campeonato Brasileiro,played,DRAW
 2026,1260611,35,832236,346,GRUPO ÚNICO,2026-11-18,20:30,59849,Cruzeiro,,20002,Palmeiras,,Mineirão,Belo Horizonte,MG,Campeonato Brasileiro,upcoming,
 2026,1260611,35,832237,347,GRUPO ÚNICO,2026-11-18,21:30,20013,Grêmio,,61377,Bahia,,Arena do Grêmio,Porto Alegre,RS,Campeonato Brasileiro,upcoming,
 2026,1260611,35,832238,348,GRUPO ÚNICO,2026-11-18,19:30,61590,Coritiba SAF,,20008,Santos FC,,Couto Pereira,Curitiba,PR,Campeonato Brasileiro,upcoming,
